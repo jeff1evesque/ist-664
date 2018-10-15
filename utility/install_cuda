@@ -1,0 +1,28 @@
+#!/bin/bash
+
+## local variables
+CUDA_VERSION=8.0
+REPO="ubuntu1604-8-0-local-ga2_$CUDA_VERSION.61-1_amd64.deb"
+
+## base installer
+sudo apt-get install -y build-essential
+sudo dpkg -i cuda-repo-"$REPO"
+sudo apt-get update
+sudo apt-get install -y cuda
+
+## install package
+sudo dpkg -i cuda-repo-"$REPO"
+sudo apt-get -y update
+sudo apt-get install -y cuda
+
+## append to path
+PATHOK=$(grep cuda /etc/environment)
+if [ -z $PATHOK ]; then
+    sed -e "/^PATH/s/\"$/:\/usr\/local\/cuda-$CUDA_VERSION\/bin\"/g" /etc/environment
+fi
+
+## verify installation
+echo '======================================='
+echo 'Cuda installed:\n'
+echo "$(nvidia-smi)"
+echo '======================================='
