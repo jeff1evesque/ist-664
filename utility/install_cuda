@@ -1,24 +1,24 @@
 #!/bin/bash
 
 ## local variables
-NVIDIA_CUDA_URL=https://developer.download.nvidia.com/compute/cuda/repos
-CUDA_VERSION=10.0
-REPO="ubuntu1604_$CUDA_VERSION.130-1_amd64.deb"
+CUDA_VERSION=10
+NVIDIA_CUDA_URL="https://developer.nvidia.com/compute/cuda"
+REPO="rhel7-$CUDA_VERSION-0-local-$CUDA_VERSION.0.130-410.48-1.0-1.x86_64"
 
+##
 ## download repository
-wget "$NVIDIA_CUDA_URL/ubuntu1604/x86_64/cuda-repo-$REPO"
-
-## base installer
-sudo apt-get install -y build-essential
-sudo dpkg -i "cuda-repo-$REPO"
-sudo apt-key adv --fetch-keys "$NVIDIA_CUDA_URL/ubuntu1604/x86_64/7fa2af80.pub"
-sudo apt-get update
-sudo apt-get install -y cuda
+##
+## Note: if the connection drops while the associated 'wget' file downloads,
+##     'wget -c <filename>' can be reimplemented to resume the download.
+##
+sudo yum install -y wget
+wget "$NVIDIA_CUDA_URL/$CUDA_VERSION.0/Prod/local_installers/cuda-repo-$REPO"\
+    -O "$REPO.rpm"
 
 ## install package
-sudo dpkg -i "cuda-repo-$REPO"
-sudo apt-get -y update
-sudo apt-get install -y cuda
+sudo rpm -i "$REPO.rpm"
+sudo yum clean all
+sudo yum install -y cuda
 
 ## append to path
 PATHOK=$(grep cuda /etc/environment)
