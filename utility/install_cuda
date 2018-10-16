@@ -12,8 +12,8 @@ REPO="rhel7-$CUDA_VERSION-0-local-$CUDA_VERSION.0.130-410.48-1.0-1.x86_64"
 ##     'wget -c <filename>' can be reimplemented to resume the download.
 ##
 sudo yum -y install wget
-###wget "$NVIDIA_CUDA_URL/$CUDA_VERSION.0/Prod/local_installers/cuda-repo-$REPO"\
-###    -O "$REPO.rpm"
+wget "$NVIDIA_CUDA_URL/$CUDA_VERSION.0/Prod/local_installers/cuda-repo-$REPO"\
+    -O "$REPO.rpm"
 
 ## install nvidia drivers
 sudo yum -y update
