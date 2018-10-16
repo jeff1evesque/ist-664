@@ -1,0 +1,33 @@
+#!/bin/bash
+
+## local variables
+CUDA_VERSION=10
+NVIDIA_CUDA_URL="https://developer.nvidia.com/compute/cuda"
+REPO="rhel7-$CUDA_VERSION-0-local-$CUDA_VERSION.0.130-410.48-1.0-1.x86_64"
+
+##
+## download repository
+##
+## Note: if the connection drops while the associated 'wget' file downloads,
+##     'wget -c <filename>' can be reimplemented to resume the download.
+##
+sudo yum -y install wget
+wget "$NVIDIA_CUDA_URL/$CUDA_VERSION.0/Prod/local_installers/cuda-repo-$REPO"\
+    -O "$REPO.rpm"
+
+## install nvidia drivers
+sudo yum -y update
+sudo yum -y groupinstall 'Development Tools'
+sudo yum -y install kernel-devel epel-release dkms
+
+## install package
+sudo rpm -i "$REPO.rpm"
+sudo yum clean all
+sudo yum install -y cuda
+
+## append to path
+PATHOK=$(grep cuda /etc/environment)
+if [ -z $PATHOK ]; then
+    sed -e "/^PATH/s/\"$/:\/usr\/local\/cuda-$CUDA_VERSION\/bin\"/g" /etc/environment
+fi
+
