@@ -1,9 +1,17 @@
 #!/bin/bash
 
-## local variables
-CUDA_VERSION=10
-NVIDIA_CUDA_URL="https://developer.nvidia.com/compute/cuda"
-REPO="rhel7-$CUDA_VERSION-0-local-$CUDA_VERSION.0.130-410.48-1.0-1.x86_64"
+##
+## local variables: cuda + cudnn need to be compatible for tensorflow:
+##
+##     - https://www.tensorflow.org/install/source#tested_source_configurations
+##
+CUDA_VERSION=9
+NVIDIA_CUDA_URL='https://developer.nvidia.com/compute/cuda'
+REPO="rhel7-$CUDA_VERSION-0-local-$CUDA_VERSION.0.176-1.x86_64-rpm"
+
+CUDNN_VERSION=7.2.1
+CUDNN_URL='http://developer.download.nvidia.com/compute/redist/cudnn'
+CUDNN_FILE="cudnn-9.2-linux-x64-v$CUDNN_VERSION.38.tgz"
 
 ##
 ## download repository
@@ -15,6 +23,10 @@ sudo yum -y install wget
 wget "$NVIDIA_CUDA_URL/$CUDA_VERSION.0/Prod/local_installers/cuda-repo-$REPO"\
     -O "$REPO.rpm"
 
+## clear cache
+sudo yum clean all
+sudo rm -rf /var/cache/yum
+
 ## install nvidia drivers
 sudo yum -y update
 sudo yum -y groupinstall 'Development Tools'
@@ -22,7 +34,6 @@ sudo yum -y install kernel-devel epel-release dkms
 
 ## install package
 sudo rpm -i "$REPO.rpm"
-sudo yum clean all
 sudo yum install -y cuda
 
 ## append to path
@@ -31,3 +42,11 @@ if [ -z $PATHOK ]; then
     sed -e "/^PATH/s/\"$/:\/usr\/local\/cuda-$CUDA_VERSION\/bin\"/g" /etc/environment
 fi
 
+## download cuDNN
+wget "$CUDNN_URL/v$CUDNN_VERSION/$CUDNN_FILE"
+tar -xzvf "$CUDNN_FILE"
+
+## move cuDNN into cuda
+sudo cp cuda/include/cudnn.h /usr/local/cuda/include
+sudo cp cuda/lib64/libcudnn* /usr/local/cuda/lib64
+sudo chmod a+r /usr/local/cuda/include/cudnn.h /usr/local/cuda/lib64/libcudnn*
