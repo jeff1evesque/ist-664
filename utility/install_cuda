@@ -40,7 +40,7 @@ if [ -z $PATHOK ]; then
 fi
 
 ## download cuDNN
-wget "$CUDNN_URL/v$CUDA_VERSION/$FILE"
+wget "$CUDNN_URL/v$CUDA_VERSION/$CUDA_FILE"
 tar -xzvf "$CUDA_FILE"
 
 ## move cuDNN into cuda
