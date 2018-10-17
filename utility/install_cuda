@@ -1,9 +1,13 @@
 #!/bin/bash
 
-## local variables
-CUDA_VERSION=10
-NVIDIA_CUDA_URL="https://developer.nvidia.com/compute/cuda"
-REPO="rhel7-$CUDA_VERSION-0-local-$CUDA_VERSION.0.130-410.48-1.0-1.x86_64"
+##
+## local variables: cuda + cudnn need to be compatible for tensorflow:
+##
+##     - https://www.tensorflow.org/install/source#tested_source_configurations
+##
+CUDA_VERSION=9
+NVIDIA_CUDA_URL='https://developer.nvidia.com/compute/cuda'
+REPO="rhel7-$CUDA_VERSION-0-local-$CUDA_VERSION.0.176-1.x86_64"
 
 ##
 ## download repository
