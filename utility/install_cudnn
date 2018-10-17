@@ -10,7 +10,7 @@ CUDNN_URL='http://developer.download.nvidia.com/compute/redist/cudnn/v6.0'
 REPO="rhel7-$CUDA_VERSION-0-local-$CUDA_VERSION.0.130-410.48-1.0-1.x86_64"
 
 ## download cuDNN
-CUDNN_TAR_FILE="cudnn-8.0-linux-x64-v6.0.tgz"
+CUDNN_TAR_FILE='cudnn-8.0-linux-x64-v6.0.tgz'
 wget "$CUDNN_URL/cudnn-$CUDA_VERSION.0-linux-x64-v6.0.tgz"
 tar -xzvf "cudnn-$CUDA_VERSION.0-linux-x64-v6.0.tgz"
 
