@@ -11,7 +11,7 @@ REPO="rhel7-$CUDA_VERSION-0-local-$CUDA_VERSION.0.176-1.x86_64-rpm"
 
 CUDNN_VERSION=7.2.1
 CUDNN_URL='http://developer.download.nvidia.com/compute/redist/cudnn'
-CUDA_FILE="cudnn-9.2-linux-x64-v$CUDNN_VERSION.38.tgz"
+CUDNN_FILE="cudnn-9.2-linux-x64-v$CUDNN_VERSION.38.tgz"
 
 ##
 ## download repository
@@ -40,8 +40,8 @@ if [ -z $PATHOK ]; then
 fi
 
 ## download cuDNN
-wget "$CUDNN_URL/v$CUDA_VERSION/$CUDA_FILE"
-tar -xzvf "$CUDA_FILE"
+wget "$CUDNN_URL/v$CUDNN_VERSION/$CUDNN_FILE"
+tar -xzvf "$CUDNN_FILE.rpm"
 
 ## move cuDNN into cuda
 sudo cp cuda/include/cudnn.h /usr/local/cuda/include
