@@ -41,7 +41,7 @@ fi
 
 ## download cuDNN
 wget "$CUDNN_URL/v$CUDNN_VERSION/$CUDNN_FILE"
-tar -xzvf "$CUDNN_FILE.rpm"
+tar -xzvf "$CUDNN_FILE.tgz"
 
 ## move cuDNN into cuda
 sudo cp cuda/include/cudnn.h /usr/local/cuda/include
