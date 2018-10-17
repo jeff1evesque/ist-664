@@ -9,6 +9,10 @@ CUDA_VERSION=9
 NVIDIA_CUDA_URL='https://developer.nvidia.com/compute/cuda'
 REPO="rhel7-$CUDA_VERSION-0-local-$CUDA_VERSION.0.176-1.x86_64"
 
+CUDA_VERSION=7.2.1
+CUDNN_URL='http://developer.download.nvidia.com/compute/redist/cudnn'
+CUDA_FILE="cudnn-9.2-linux-x64-v$CUDA_VERSION.38.tgz"
+
 ##
 ## download repository
 ##
@@ -35,3 +39,11 @@ if [ -z $PATHOK ]; then
     sed -e "/^PATH/s/\"$/:\/usr\/local\/cuda-$CUDA_VERSION\/bin\"/g" /etc/environment
 fi
 
+## download cuDNN
+wget "$CUDNN_URL/v$CUDA_VERSION/$FILE"
+tar -xzvf "$CUDA_FILE"
+
+## move cuDNN into cuda
+sudo cp cuda/include/cudnn.h /usr/local/cuda-"$CUDA_VERSION"/include
+sudo cp cuda/lib64/libcudnn* /usr/local/cuda-"$CUDA_VERSION"/lib64
+sudo chmod a+r /usr/local/cuda-"$CUDA_VERSION"/include/cudnn.h /usr/local/cuda-"$CUDA_VERSION"/lib64/libcudnn*
