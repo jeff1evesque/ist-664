@@ -23,6 +23,10 @@ sudo yum -y install wget
 wget "$NVIDIA_CUDA_URL/$CUDA_VERSION.0/Prod/local_installers/cuda-repo-$REPO"\
     -O "$REPO.rpm"
 
+## clear cache
+sudo yum clean all
+sudo rm -rf /var/cache/yum
+
 ## install nvidia drivers
 sudo yum -y update
 sudo yum -y groupinstall 'Development Tools'
@@ -30,7 +34,6 @@ sudo yum -y install kernel-devel epel-release dkms
 
 ## install package
 sudo rpm -i "$REPO.rpm"
-sudo yum clean all
 sudo yum install -y cuda
 
 ## append to path
@@ -41,7 +44,7 @@ fi
 
 ## download cuDNN
 wget "$CUDNN_URL/v$CUDNN_VERSION/$CUDNN_FILE"
-tar -xzvf "$CUDNN_FILE.tgz"
+tar -xzvf "$CUDNN_FILE"
 
 ## move cuDNN into cuda
 sudo cp cuda/include/cudnn.h /usr/local/cuda/include
