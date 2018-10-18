@@ -39,9 +39,18 @@ sudo yum -y install kernel-devel kernel-headers
 sudo rpm -i "$CUDA_REPO.rpm"
 sudo yum install -y cuda
 
-## download cuDNN
+echo '====================================================='
+echo "cuda installed: $(cat /usr/local/cuda/version.txt)"
+echo '====================================================='
+
+## install cuDNN
 wget "$CUDNN_URL/v$CUDNN_VERSION/$CUDNN_FILE"
 tar -xzvf "$CUDNN_FILE"
+
+echo '====================================================='
+echo "cuDNN installed:"
+echo "cuDNN installed: $(cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2)"
+echo '====================================================='
 
 ## move cuDNN into cuda
 sudo cp cuda/include/cudnn.h /usr/local/cuda/include
