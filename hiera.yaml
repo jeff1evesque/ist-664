@@ -1,0 +1,9 @@
+---
+version: 5
+defaults:
+  datadir: /etc/puppetlabs/puppet
+  data_hash: yaml_data
+
+hierarchy:
+  - name: 'mongodb cluster'
+    path: hiera/mongodb.yaml
