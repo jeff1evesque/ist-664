@@ -5,5 +5,8 @@ defaults:
   data_hash: yaml_data
 
 hierarchy:
-  - name: 'mongodb cluster'
+  - name: 'general mongodb configuration'
     path: hiera/mongodb.yaml
+
+  - name: 'mongodb clustser configuration'
+    path: hiera/mongodb_cluster.yaml
