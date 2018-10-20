@@ -8,5 +8,5 @@ hierarchy:
   - name: 'general mongodb configuration'
     path: hiera/mongodb.yaml
 
-  - name: 'mongodb clustser configuration'
+  - name: 'mongodb cluster configuration'
     path: hiera/mongodb_cluster.yaml
