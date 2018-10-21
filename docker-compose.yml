@@ -2,7 +2,7 @@ version: '3'
 services:
   mongos_1:
     hostname: mongos-1
-    image: puppet/puppet-agent:latest
+    image: ubuntu:16.04
     volumes:
         - ./utility/install_puppet_agent_ubuntu:/install_puppet_agent_ubuntu
     command: 
@@ -10,7 +10,7 @@ services:
 
   repl1_mongod1:
     hostname: repl1-mongod1
-    image: puppet/puppet-agent:latest
+    image: ubuntu:16.04
     volumes:
         - ./utility/install_puppet_agent_ubuntu:/install_puppet_agent_ubuntu
     command: 
@@ -18,7 +18,7 @@ services:
 
   repl1_mongod2:
     hostname: repl1-mongod2
-    image: puppet/puppet-agent:latest
+    image: ubuntu:16.04
     volumes:
         - ./utility/install_puppet_agent_ubuntu:/install_puppet_agent_ubuntu
     command: 
@@ -26,7 +26,7 @@ services:
 
   repl1_mongod3:
     hostname: repl1-mongod3
-    image: puppet/puppet-agent:latest
+    image: ubuntu:16.04
     volumes:
         - ./utility/install_puppet_agent_ubuntu:/install_puppet_agent_ubuntu
     command: 
