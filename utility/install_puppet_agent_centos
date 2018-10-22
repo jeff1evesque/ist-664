@@ -20,7 +20,7 @@
 ##      puppet agent -t
 ##
 PUPPET_6_RPM='puppetlabs-release-pc1-el-6.noarch'
-PUPPET_7_RPM='puppetlabs-release-el-7.noarch'
+PUPPET_7_RPM='puppet5-release-el-7.noarch'
 VAGRANT_IP='192.168.0.*'
 
 if [[ $(cat /etc/redhat-release | grep 'Red Hat') ]]; then
@@ -133,8 +133,8 @@ if [[ "$OS_VERSION" -lt 7 ]]; then
     sudo yum install -y puppet-agent
 else
     rpm -e "$PUPPET_7_RPM"
-    rpm -Uvh https://yum.puppetlabs.com/"$PUPPET_7_RPM".rpm
-        sudo yum install -y puppet
+    rpm -Uvh https://yum.puppetlabs.com/puppet5/"$PUPPET_7_RPM".rpm
+    sudo yum install -y puppet-agent
 fi
 echo 'Puppet agent installed.'
 
@@ -187,10 +187,7 @@ else
 fi
 
 ## set puppet environment
-if [[ $(cat /etc/redhat-release | grep 'Red Hat') ]]; then
-    /usr/bin/puppet config set server "$HOST_FQDN"
-else
-    /opt/puppetlabs/bin/puppet config set server "$HOST_FQDN"
+/opt/puppetlabs/bin/puppet config set server "$HOST_FQDN"
 
 ## default search domain
 if exists /vagrant/.ssh/*_vagrant.private; then
@@ -214,15 +211,9 @@ sudo /etc/init.d/network restart
 ## Note: sometimes when ssl certificates exists, errors prevent puppetagents
 ##       from connecting with the puppetserver.
 ##
-if [[ $(cat /etc/redhat-release | grep 'Red Hat') ]]; then
-    /usr/bin/puppet config set server "$HOST_FQDN"
-    /usr/bin/puppet config set certname "$LOCAL_FQDN"
-    sudo mv /var/lib/puppet/ssl /var/lib/puppet/ssl.bk
-else
-    /opt/puppetlabs/bin/puppet config set server "$HOST_FQDN"
-    /opt/puppetlabs/bin/puppet config set certname "$LOCAL_FQDN"
-    sudo mv /etc/puppetlabs/puppet/ssl /etc/puppetlabs/puppet/ssl.bk
-fi
+/opt/puppetlabs/bin/puppet config set server "$HOST_FQDN"
+/opt/puppetlabs/bin/puppet config set certname "$LOCAL_FQDN"
+sudo mv -f /etc/puppetlabs/puppet/ssl /etc/puppetlabs/puppet/ssl.bk
 
 ## enable nullglob
 shopt -s nullglob
