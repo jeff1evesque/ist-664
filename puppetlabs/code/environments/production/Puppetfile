@@ -2,30 +2,14 @@
 
 ## @Puppetfile: this file is intended for travis ci implementation.
 
-mod 'stdlib',
-  :git => 'https://github.com/puppetlabs/puppetlabs-stdlib.git',
-  :ref => '5.1.0'
+mod 'mongodb',
+  :git => 'https://github.com/voxpupuli/puppet-mongodb.git',
+  :ref => 'v2.4.1'
 
 mod 'apt',
   :git => 'https://github.com/puppetlabs/puppetlabs-apt.git',
   :ref => '6.1.1'
 
-mod 'mysql',
-  :git => 'https://github.com/puppetlabs/puppetlabs-mysql.git',
-  :ref => '6.2.0'
-
-mod 'sys',
-  :git => 'https://github.com/counsyl/puppet-sys.git',
-  :ref => '0.9.23'
-
-mod 'timezone',
-  :git => 'https://github.com/BashtonLtd/puppet-timezone.git',
-  :ref => '2.0.1'
-
-mod 'concat',
-  :git => 'https://github.com/puppetlabs/puppetlabs-concat.git',
+mod 'stdlib',
+  :git => 'https://github.com/puppetlabs/puppetlabs-stdlib.git',
   :ref => '5.1.0'
-
-mod 'nginx',
-  :git => 'https://github.com/voxpupuli/puppet-nginx.git',
-  :ref => 'v0.14.0'
