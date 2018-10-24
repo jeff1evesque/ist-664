@@ -4,7 +4,7 @@ node 'mongos-1' {
   }
   -> class {'mongodb::server':
     configsvr => true,
-    bind_ip   => $::ipaddress,
+    bind_ip   => [$::ipaddress],
   }
   -> class {'mongodb::client': }
   -> class {'mongodb::mongos':
