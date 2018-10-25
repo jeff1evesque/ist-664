@@ -1,11 +1,5 @@
 node 'mongos-1' {
-  file { '/data/db':
-    ensure => 'directory',
-    owner  => 'mongod',
-    group  => 'root',
-    mode   => '0750',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
   }
   -> class {'mongodb::server':
@@ -35,13 +29,7 @@ node 'mongos-1' {
 }
 
 node 'repl1-mongod1' {
-  file { '/data/db':
-    ensure => 'directory',
-    owner  => 'mongod',
-    group  => 'root',
-    mode   => '0750',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
   }
   -> class {'mongodb::server':
@@ -60,13 +48,7 @@ node 'repl1-mongod1' {
 }
 
 node 'repl1-mongod2' {
-  file { '/data/db':
-    ensure => 'directory',
-    owner  => 'mongod',
-    group  => 'root',
-    mode   => '0750',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
   }
   -> class {'mongodb::server':
@@ -85,13 +67,7 @@ node 'repl1-mongod2' {
 }
 
 node 'repl1-mongod3' {
-  file { '/data/db':
-    ensure => 'directory',
-    owner  => 'mongod',
-    group  => 'root',
-    mode   => '0750',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
   }
   -> class {'mongodb::server':
@@ -110,13 +86,7 @@ node 'repl1-mongod3' {
 }
 
 node 'repl2-mongod1' {
-  file { '/data/db':
-    ensure => 'directory',
-    owner  => 'mongod',
-    group  => 'root',
-    mode   => '0750',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
   }
   -> class {'mongodb::server':
@@ -135,13 +105,7 @@ node 'repl2-mongod1' {
 }
 
 node 'repl2-mongod2' {
-  file { '/data/db':
-    ensure => 'directory',
-    owner  => 'mongod',
-    group  => 'root',
-    mode   => '0750',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
   }
   -> class {'mongodb::server':
@@ -160,13 +124,7 @@ node 'repl2-mongod2' {
 }
 
 node 'repl2-mongod3' {
-  file { '/data/db':
-    ensure => 'directory',
-    owner  => 'mongod',
-    group  => 'root',
-    mode   => '0750',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
   }
   -> class {'mongodb::server':
