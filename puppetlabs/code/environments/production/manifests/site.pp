@@ -1,4 +1,4 @@
-## puppet service
+## persistent puppetagent
 service { 'puppet':
     ensure  => running,
     enable  => true,
