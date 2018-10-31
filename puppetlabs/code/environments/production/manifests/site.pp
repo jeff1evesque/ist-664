@@ -1,3 +1,10 @@
+## persistent puppetagent
+service { 'puppet':
+    ensure  => running,
+    enable  => true,
+}
+
+## configure mongos
 node 'mongos-1' {
   class {'mongodb::globals':
     manage_package_repo => true,
@@ -28,6 +35,7 @@ node 'mongos-1' {
   }
 }
 
+## shard1 member
 node 'repl1-mongod1' {
   class {'mongodb::globals':
     manage_package_repo => true,
@@ -47,6 +55,7 @@ node 'repl1-mongod1' {
   }
 }
 
+## shard1 member
 node 'repl1-mongod2' {
   class {'mongodb::globals':
     manage_package_repo => true,
@@ -66,6 +75,7 @@ node 'repl1-mongod2' {
   }
 }
 
+## shard1 member
 node 'repl1-mongod3' {
   class {'mongodb::globals':
     manage_package_repo => true,
@@ -85,6 +95,7 @@ node 'repl1-mongod3' {
   }
 }
 
+## shard2 member
 node 'repl2-mongod1' {
   class {'mongodb::globals':
     manage_package_repo => true,
@@ -104,6 +115,7 @@ node 'repl2-mongod1' {
   }
 }
 
+## shard2 member
 node 'repl2-mongod2' {
   class {'mongodb::globals':
     manage_package_repo => true,
@@ -123,6 +135,7 @@ node 'repl2-mongod2' {
   }
 }
 
+## shard2 member
 node 'repl2-mongod3' {
   class {'mongodb::globals':
     manage_package_repo => true,
