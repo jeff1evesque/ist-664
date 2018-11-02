@@ -44,5 +44,5 @@ for f in listdir(data_directory):
 
 # insert to mongodb
 if data:
-    post_id = mycol.insert_many(line).inserted_id
+    post_id = col.insert_many(data).inserted_id
     print('post_id: {}'.format(post_id))
