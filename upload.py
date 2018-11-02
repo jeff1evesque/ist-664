@@ -10,7 +10,13 @@ import json
 from os import listdir
 from os.path import isfile, join
 from pymongo import MongoClient
-from config import mongos_endpoint, mongos_port, database, collection
+from config import (
+    mongos_endpoint,
+    mongos_port,
+    database,
+    collection,
+    data_directory
+)
 
 
 # endpoint
@@ -22,8 +28,8 @@ col = db[collection]
 
 # insert data
 data = []
-for f in listdir('data'):
-    if isfile(join('data', f):
+for f in listdir(data_directory):
+    if isfile(join(data_directory, f):
         for line in f.readlines():
             # verify valid json
             try:
