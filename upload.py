@@ -20,7 +20,10 @@ from config import (
 
 
 # endpoint
-client = MongoClient(mongos_endpoint:mongos_port)
+client = MongoClient('{}:{}'.format(
+    mongos_endpoint,
+    mongos_port
+))
 
 # database + collection
 db = client[database]
@@ -29,18 +32,17 @@ col = db[collection]
 # insert data
 data = []
 for f in listdir(data_directory):
-    if isfile(join(data_directory, f):
-        for line in f.readlines():
-            # verify valid json
-            try:
-                valid = json.loads(line)
-            except ValueError, e:
-                valid = False
-                print('Not valid json: {}'.format(e))
-
-            # append to bulk array
-            if valid:
-                data.append(line)
+    file = join(data_directory, f)
+    if isfile(file):
+        with open(file) as fp:
+            for line in fp.readlines():
+                # verify valid json
+                try:
+                    valid = json.loads(line)
+                    data.append(valid)
+                except ValueError as e:
+                    valid = False
+                    print('Not valid json: {}'.format(e))
 
 # insert to mongodb
 if data:
