@@ -40,11 +40,12 @@ for f in listdir(data_directory):
                 try:
                     valid = json.loads(line)
                     data.append(valid)
+                    print('insert: {}'.format(line))
                 except ValueError as e:
                     valid = False
                     print('Not valid json: {}'.format(e))
 
 # insert to mongodb
 if data:
-    post_id = col.insert_many(data).inserted_id
+    post_id = col.insert_many(data).inserted_ids
     print('post_id: {}'.format(post_id))
