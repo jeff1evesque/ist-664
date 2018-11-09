@@ -25,11 +25,11 @@ def to_from(data):
 
     # split into 'to' and 'from'
     for i, row in df.iterrows():
-        # attain id from parent_id
+        # attain 'id' from 'parent_id'
         id = row.parent_id.split('_',1)[1]
         to = df[ (id == df.id) & (row.body != df.body) ]
 
-        # append 'to' + 'from'
+        # append 'to' and 'from'
         to_body.append(to[['body'])
         from_body.extend(repeat(row.body, len(to)))
 
