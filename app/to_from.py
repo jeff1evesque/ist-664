@@ -30,7 +30,7 @@ def to_from(data):
         to = df[ (id == df.id) & (row.body != df.body) ]
 
         # append 'to' and 'from'
-        to_body.append(to[['body'])
+        to_body.append(to[['body']])
         from_body.extend(repeat(row.body, len(to)))
 
     # return data
