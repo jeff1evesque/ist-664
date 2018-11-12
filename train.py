@@ -12,8 +12,7 @@ from config import (
     mongos_endpoint,
     mongos_port,
     database,
-    collection,
-    data_directory
+    collection
 )
 
 
@@ -22,8 +21,7 @@ data = select(
     mongos_endpoint,
     mongos_port,
     database,
-    collection,
-    data_directory
+    collection
 )
 
 # create sequence pairs
