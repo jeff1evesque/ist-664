@@ -8,14 +8,9 @@ select.py, select specified data from mongodb endpoint.
 
 
 from pymongo import MongoClient
-from config import (
-    mongos_endpoint,
-    mongos_port,
-    database,
-    collection
-)
 
-def select():
+
+def select(mongos_endpoint, mongos_port, databae, collection):
     # endpoint
     client = MongoClient('{}:{}'.format(
         mongos_endpoint,
