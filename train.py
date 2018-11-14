@@ -7,7 +7,6 @@ train.py, train a given model.
 '''
 
 from app.select import select
-from app.to_from import to_from
 from config import (
     mongos_endpoint,
     mongos_port,
@@ -16,15 +15,14 @@ from config import (
     data_directory
 )
 
-
-# query data
-data = select(
+# create single client
+client = MongoClient('{}:{}'.format(
     mongos_endpoint,
-    mongos_port,
-    database,
-    collection,
-    data_directory
-)
+    mongos_port
+))
 
 # create sequence pairs
-pairs = to_from(data)
+pairs = select(client)
+for doc in pairs.find():
+    print(doc)
+
