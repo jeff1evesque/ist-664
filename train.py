@@ -6,6 +6,7 @@ train.py, train a given model.
 
 '''
 
+from pymongo import MongoClient
 from app.select import select
 from config import (
     mongos_endpoint,
@@ -17,13 +18,11 @@ from config import (
 # create single client
 client = MongoClient('{}:{}'.format(
     mongos_endpoint,
-    mongos_port,
-    database,
-    collection
-)
+    mongos_port
+))
 
 # create sequence pairs
-pairs = select(client)
+pairs = select(client, database, collection)
 for doc in pairs.find():
     print(doc)
 

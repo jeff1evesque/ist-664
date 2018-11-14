@@ -7,10 +7,13 @@ select.py, select specified data from mongodb endpoint.
 '''
 
 
-from pymongo import MongoClient
 from bson.code import Code
 
-def select(client):
+def select(client, database, collection):
+    # database + collection
+    db = client[database]
+    col = db[collection]
+
     map = Code(
         "function () {"
         "  emit("
@@ -55,4 +58,3 @@ def select(client):
 
     # select data
     return col.map_reduce(map, reduce, 'to_from')
-
