@@ -17,7 +17,6 @@ from config import (
 # create single client
 client = MongoClient('{}:{}'.format(
     mongos_endpoint,
-    mongos_port
     mongos_port,
     database,
     collection
