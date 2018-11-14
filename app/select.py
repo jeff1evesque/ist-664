@@ -44,7 +44,7 @@ def select(client, database, collection):
         "      wantedVal = values[i].parent_id.split('_')[1];"
         "      for (var j = 0; j < values.length; j++) {"
         "        if ("
-        "            values[j].parent_id === wantedVal &&"
+        "            values[j].id === wantedVal &&"
         "            values[j].body != values[i].body"
         "        ) {"
         "          comments.push(values[j].body);"
