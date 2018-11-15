@@ -4,7 +4,11 @@ service { 'puppet':
     enable  => true,
 }
 
+##
 ## configure mongos
+##
+## @configdb, connection string '<config replset name>/<host1:port>,<host2:port>,[...]'
+##
 node 'mongos-1' {
   class {'mongodb::globals':
     manage_package_repo => true,
@@ -18,7 +22,7 @@ node 'mongos-1' {
   }
   -> class {'mongodb::client': }
   -> class {'mongodb::mongos':
-    configdb => ["${::ipaddress}:27019"],
+    configdb => "rs1/${::ipaddress}:27019",
   }
   -> mongodb_shard { 'rs1' :
     member => 'rs1/repl1-mongod1:27018',
