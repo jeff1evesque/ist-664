@@ -6,11 +6,7 @@ service { 'puppet':
 
 ## configure mongos
 node 'mongos-1' {
-  file { '/data/db':
-    ensure => 'directory',
-    mode   => '0750',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
 }
@@ -18,7 +14,7 @@ node 'mongos-1' {
   -> class {'mongodb::server':
     configsvr => true,
     bind_ip   => [$::ipaddress],
-    version   => 
+    dbpath    => '/data/db',
   }
   -> class {'mongodb::client': }
   -> class {'mongodb::mongos':
@@ -44,11 +40,7 @@ node 'mongos-1' {
 
 ## shard1 member
 node 'repl1-mongod1' {
-  file { '/data/db':
-    ensure => 'directory',
-    mode   => '0750',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
   }
@@ -56,6 +48,7 @@ node 'repl1-mongod1' {
     shardsvr => true,
     replset  => 'rs1',
     bind_ip  => [$::ipaddress],
+    dbpath   => '/data/db',
   }
   -> class {'mongodb::client': }
   mongodb_replset{'rs1':
@@ -69,11 +62,7 @@ node 'repl1-mongod1' {
 
 ## shard1 member
 node 'repl1-mongod2' {
-  file { '/data/db':
-    ensure => 'directory',
-    mode   => '0750',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
   }
@@ -81,6 +70,7 @@ node 'repl1-mongod2' {
     shardsvr => true,
     replset  => 'rs1',
     bind_ip  => [$::ipaddress],
+    dbpath   => '/data/db',
   }
   -> class {'mongodb::client': }
   mongodb_replset{'rs1':
@@ -94,11 +84,7 @@ node 'repl1-mongod2' {
 
 ## shard1 member
 node 'repl1-mongod3' {
-  file { '/data/db':
-    ensure => 'directory',
-    mode   => '0750',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
   }
@@ -106,6 +92,7 @@ node 'repl1-mongod3' {
     shardsvr => true,
     replset  => 'rs1',
     bind_ip  => [$::ipaddress],
+    dbpath   => '/data/db',
   }
   -> class {'mongodb::client': }
   mongodb_replset{'rs1':
@@ -119,11 +106,7 @@ node 'repl1-mongod3' {
 
 ## shard2 member
 node 'repl2-mongod1' {
-  file { '/data/db':
-    ensure => 'directory',
-    mode   => '0750',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
   }
@@ -131,6 +114,7 @@ node 'repl2-mongod1' {
     shardsvr => true,
     replset  => 'rs1',
     bind_ip  => [$::ipaddress],
+    dbpath   => '/data/db',
   }
   -> class {'mongodb::client': }
   mongodb_replset{'rs1':
@@ -144,11 +128,7 @@ node 'repl2-mongod1' {
 
 ## shard2 member
 node 'repl2-mongod2' {
-  file { '/data/db':
-    ensure => 'directory',
-    mode   => '0750',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
   }
@@ -156,6 +136,7 @@ node 'repl2-mongod2' {
     shardsvr => true,
     replset  => 'rs1',
     bind_ip  => [$::ipaddress],
+    dbpath   => '/data/db',
   }
   -> class {'mongodb::client': }
   mongodb_replset{'rs1':
@@ -169,11 +150,7 @@ node 'repl2-mongod2' {
 
 ## shard2 member
 node 'repl2-mongod3' {
-  file { '/data/db':
-        ensure => 'directory',
-        mode   => '0750',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
   }
@@ -181,6 +158,7 @@ node 'repl2-mongod3' {
     shardsvr => true,
     replset  => 'rs1',
     bind_ip  => [$::ipaddress],
+    dbpath   => '/data/db',
   }
   -> class {'mongodb::client': }
   mongodb_replset{'rs1':
