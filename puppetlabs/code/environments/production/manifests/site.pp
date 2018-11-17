@@ -17,12 +17,20 @@ node 'mongos-1' {
   }
   -> class {'mongodb::server':
     configsvr => true,
+    replset   => 'rs1',
+    port      => 27019
     bind_ip   => [$::ipaddress],
     dbpath    => '/data/db',
   }
   -> class {'mongodb::client': }
   -> class {'mongodb::mongos':
     configdb => "rs1/${::ipaddress}:27019",
+  }
+  -> mongodb_replset{'rs0':
+    ensure  => present,
+    members => [
+        "${::ipaddress}:27019",
+    ]
   }
   -> mongodb_shard { 'rs1' :
     member => 'rs1/repl1-mongod1:27018',
