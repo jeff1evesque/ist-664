@@ -9,7 +9,7 @@ service { 'puppet':
 ##
 ## @configdb, connection string '<config replset name>/<host1:port>,<host2:port>,[...]'
 ##
-node 'mongos-1' {
+node 'mongos' {
   class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
@@ -33,7 +33,7 @@ node 'mongos-1' {
     ]
   }
   -> mongodb_shard { 'rs1' :
-    member => 'rs1/repl1-mongod1:27018',
+    member => 'rs1/mongod1:27018',
     keys   => [{
       'rs1.foo' => {
         'name' => 1,
@@ -41,7 +41,7 @@ node 'mongos-1' {
     }],
   }
   -> mongodb_shard { 'rs2' :
-    member => 'rs2/repl2-mongod1:27018',
+    member => 'rs2/mongod1:27018',
     keys   => [{
       'rs1.foo' => {
         'name' => 1,
@@ -51,7 +51,7 @@ node 'mongos-1' {
 }
 
 ## shard1 member
-node 'repl1-mongod1' {
+node 'mongod1' {
   class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
@@ -65,15 +65,15 @@ node 'repl1-mongod1' {
   -> class {'mongodb::client': }
   mongodb_replset{'rs1':
     members => [
-        'repl1-mongod1:27018',
-        'repl1-mongod2:27018',
-        'repl1-mongod3:27018',
+        'mongod1:27018',
+        'mongod2:27018',
+        'mongod3:27018',
     ],
   }
 }
 
 ## shard1 member
-node 'repl1-mongod2' {
+node 'mongod2' {
   class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
@@ -87,15 +87,15 @@ node 'repl1-mongod2' {
   -> class {'mongodb::client': }
   mongodb_replset{'rs1':
     members => [
-        'repl1-mongod1:27018',
-        'repl1-mongod2:27018',
-        'repl1-mongod3:27018',
+        'mongod1:27018',
+        'mongod2:27018',
+        'mongod3:27018',
     ],
   }
 }
 
 ## shard1 member
-node 'repl1-mongod3' {
+node 'mongod3' {
   class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
@@ -109,9 +109,9 @@ node 'repl1-mongod3' {
   -> class {'mongodb::client': }
   mongodb_replset{'rs1':
     members => [
-        'repl1-mongod1:27018',
-        'repl1-mongod2:27018',
-        'repl1-mongod3:27018',
+        'mongod1:27018',
+        'mongod2:27018',
+        'mongod3:27018',
     ],
   }
 }
