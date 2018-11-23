@@ -1,13 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-##
-## private network workaround
-##
-## https://github.com/hashicorp/vagrant/issues/7876#issuecomment-252131829
-##
-require_relative '../network_interfaces.rb'
-
 ## configurations
 servers=[
   {
@@ -39,27 +32,6 @@ servers=[
     :cpu => 3
   },
 ]
-
-##
-## multiple vagrant plugins follow the following syntax:
-##
-##       required_plugins = %w(plugin1 plugin2 plugin3)
-##
-required_plugins  = %w(vagrant-vbguest)
-plugin_installed  = false
-
-## install vagrant plugins
-#required_plugins.each do |plugin|
-#    unless Vagrant.has_plugin? plugin
-#        system "vagrant plugin install #{plugin}"
-#        plugin_installed = true
-#    end
-#end
-
-## restart Vagrant: if new plugin installed
-if plugin_installed == true
-    exec "vagrant #{ARGV.join(' ')}"
-end
 
 ## create vbox machines
 Vagrant.configure(2) do |config|
