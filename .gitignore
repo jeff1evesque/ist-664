@@ -1,2 +1,5 @@
 # ignore files
 config.py
+
+# ignore directories
+.vagrant/
