@@ -10,15 +10,20 @@ service { 'puppet':
 ## @configdb, connection string '<config replset name>/<host1:port>,<host2:port>,[...]'
 ##
 node 'mongos' {
-  class {'mongodb::globals':
+  file { '/data':
+    ensure => 'directory',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
+  -> class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
-}
   }
   -> class {'mongodb::server':
     configsvr => true,
     replset   => 'rs1',
-    port      => 27019
+    port      => 27019,
     bind_ip   => [$::ipaddress],
     dbpath    => '/data/db',
   }
@@ -52,7 +57,13 @@ node 'mongos' {
 
 ## shard1 member
 node 'mongod1' {
-  class {'mongodb::globals':
+  file { '/data':
+    ensure => 'directory',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
+  -> class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
   }
@@ -74,7 +85,13 @@ node 'mongod1' {
 
 ## shard1 member
 node 'mongod2' {
-  class {'mongodb::globals':
+  file { '/data':
+    ensure => 'directory',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
+  -> class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
   }
@@ -96,7 +113,13 @@ node 'mongod2' {
 
 ## shard1 member
 node 'mongod3' {
-  class {'mongodb::globals':
+  file { '/data':
+    ensure => 'directory',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
+  -> class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
   }
@@ -118,7 +141,13 @@ node 'mongod3' {
 
 ## shard2 member
 node 'repl2-mongod1' {
-  class {'mongodb::globals':
+  file { '/data':
+    ensure => 'directory',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
+  -> class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
   }
@@ -140,7 +169,13 @@ node 'repl2-mongod1' {
 
 ## shard2 member
 node 'repl2-mongod2' {
-  class {'mongodb::globals':
+  file { '/data':
+    ensure => 'directory',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
+  -> class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
   }
@@ -162,7 +197,13 @@ node 'repl2-mongod2' {
 
 ## shard2 member
 node 'repl2-mongod3' {
-  class {'mongodb::globals':
+  file { '/data':
+    ensure => 'directory',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+  }
+  -> class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
   }
