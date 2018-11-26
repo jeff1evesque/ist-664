@@ -7,26 +7,47 @@ servers=[
     :hostname => 'mongos',
     :ip => '192.168.0.10',
     :box => 'centos/7',
-    :ram => 512,
+    :ram => 256,
+    :cpu => 2
+  },
+  {
+    :hostname => 'mongocfg1',
+    :ip => '192.168.0.11',
+    :box => 'centos/7',
+    :ram => 256,
+    :cpu => 2
+  },
+  {
+    :hostname => 'mongocfg2',
+    :ip => '192.168.0.12',
+    :box => 'centos/7',
+    :ram => 256,
+    :cpu => 2
+  },
+  {
+    :hostname => 'mongocfg3',
+    :ip => '192.168.0.13',
+    :box => 'centos/7',
+    :ram => 256,
     :cpu => 2
   },
   {
     :hostname => 'mongod1',
-    :ip => '192.168.0.11',
+    :ip => '192.168.0.14',
     :box => 'centos/7',
     :ram => 1024,
     :cpu => 3
   },
   {
     :hostname => 'mongod2',
-    :ip => '192.168.0.12',
+    :ip => '192.168.0.15',
     :box => 'centos/7',
     :ram => 1024,
     :cpu => 3
   },
   {
     :hostname => 'mongod3',
-    :ip => '192.168.0.13',
+    :ip => '192.168.0.16',
     :box => 'centos/7',
     :ram => 1024,
     :cpu => 3
