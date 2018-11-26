@@ -94,29 +94,19 @@ node 'mongocfg3' {
 ## @configdb, connection string '<config replset name>/<host1:port>,<host2:port>,[...]'
 ##
 node 'mongos' {
-  file { '/data':
-    ensure => 'directory',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
   }
   -> class {'mongodb::client': }
+  -> mongodb_replset { cfg1:
+    ensure  => present,
+    members => ['mongocfg1:27019', 'mongocfg2:27019', 'mongocfg3:27019']
+  }
   -> class {'mongodb::mongos':
-    configdb => "rs1/mongocfg1:27019",
+    configdb => 'cfg1/mongocfg1:27019',
   }
-  -> mongodb_shard { 'cfg1' :
-    member => 'cfg1/mongocfg1:27019',
-    keys   => [{
-      'cfg1.foo' => {
-        'name' => 1,
-      }
-    }],
-  }
-  -> mongodb_shard { 'rs1' :
+  -> mongodb_shard { 'rs1':
     member => 'rs1/mongod1:27018',
     keys   => [{
       'rs1.foo' => {
@@ -125,6 +115,7 @@ node 'mongos' {
     }],
   }
 }
+
 
 ## shard1 member
 node 'mongod1' {
