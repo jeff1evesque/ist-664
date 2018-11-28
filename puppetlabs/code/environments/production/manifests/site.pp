@@ -25,9 +25,9 @@ node 'mongocfg1' {
   -> class {'mongodb::client': }
   mongodb_replset{'cfg1':
     members => [
-        'mongocfg1:27019',
-        'mongocfg2:27019',
-        'mongocfg3:27019',
+        '192.168.0.11:27019',
+        '192.168.0.12:27019',
+        '192.168.0.13:27019',
     ],
   }
 }
@@ -53,9 +53,9 @@ node 'mongocfg2' {
   -> class {'mongodb::client': }
   mongodb_replset{'cfg1':
     members => [
-        'mongocfg1:27019',
-        'mongocfg2:27019',
-        'mongocfg3:27019',
+        '192.168.0.11:27019',
+        '192.168.0.12:27019',
+        '192.168.0.13:27019',
     ],
   }
 }
@@ -81,9 +81,9 @@ node 'mongocfg3' {
   -> class {'mongodb::client': }
   mongodb_replset{'cfg1':
     members => [
-        'mongocfg1:27019',
-        'mongocfg2:27019',
-        'mongocfg3:27019',
+        '192.168.0.11:27019',
+        '192.168.0.12:27019',
+        '192.168.0.13:27019',
     ],
   }
 }
@@ -101,13 +101,13 @@ node 'mongos' {
   -> class {'mongodb::client': }
   -> mongodb_replset { cfg1:
     ensure  => present,
-    members => ['mongocfg1:27019', 'mongocfg2:27019', 'mongocfg3:27019']
+    members => ['192.168.0.11:27019', '192.168.0.12:27019', '192.168.0.13:27019']
   }
   -> class {'mongodb::mongos':
-    configdb => 'cfg1/mongocfg1:27019',
+    configdb => 'cfg1/192.168.0.11:27019',
   }
   -> mongodb_shard { 'rs1':
-    member => 'rs1/mongod1:27018',
+    member => 'rs1/192.168.0.14:27018',
     keys   => [{
       'rs1.foo' => {
         'name' => 1,
@@ -138,9 +138,9 @@ node 'mongod1' {
   -> class {'mongodb::client': }
   mongodb_replset{'rs1':
     members => [
-        'mongod1:27018',
-        'mongod2:27018',
-        'mongod3:27018',
+        '192.168.0.14:27018',
+        '192.168.0.15:27018',
+        '192.168.0.16:27018',
     ],
   }
 }
@@ -166,9 +166,9 @@ node 'mongod2' {
   -> class {'mongodb::client': }
   mongodb_replset{'rs1':
     members => [
-        'mongod1:27018',
-        'mongod2:27018',
-        'mongod3:27018',
+        '192.168.0.14:27018',
+        '192.168.0.15:27018',
+        '192.168.0.16:27018',
     ],
   }
 }
@@ -194,9 +194,9 @@ node 'mongod3' {
   -> class {'mongodb::client': }
   mongodb_replset{'rs1':
     members => [
-        'mongod1:27019',
-        'mongod2:27019',
-        'mongod3:27019',
+        '192.168.0.14:27018',
+        '192.168.0.15:27018',
+        '192.168.0.16:27018',
     ],
   }
 }
