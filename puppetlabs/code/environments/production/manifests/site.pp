@@ -7,17 +7,25 @@ service { 'puppet':
     enable  => true,
 }
 
+##
 ## configsrv members
+##
+## Note: Starting in MongoDB 3.2, the WiredTiger storage engine
+##       is the default storage engine.
+##
+##     - https://docs.mongodb.com/v4.0/core/wiredtiger/
+##
 node /^mongocfg(1|2|3)$/ {
   class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => $mongo_repo,
   }
   -> class {'mongodb::server':
-    configsvr => true,
-    replset   => 'cfg1',
-    bind_ip   => ['0.0.0.0'],
-    dbpath    => '/data/db',
+    shardsvr       => true,
+    replset        => 'rs1',
+    bind_ip        => ['0.0.0.0'],
+    dbpath         => '/data/db',
+    storage_engine => 'wiredTiger',
   }
   -> class {'mongodb::client': }
 }
@@ -46,17 +54,25 @@ node 'mongos' {
   }
 }
 
+##
 ## shard1 members
+##
+## Note: Starting in MongoDB 3.2, the WiredTiger storage engine
+##       is the default storage engine.
+##
+##     - https://docs.mongodb.com/v4.0/core/wiredtiger/
+##
 node /^mongod(1|2|3)$/ {
   class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => $mongo_repo,
   }
   -> class {'mongodb::server':
-    shardsvr => true,
-    replset  => 'rs1',
-    bind_ip  => ['0.0.0.0'],
-    dbpath   => '/data/db',
+    shardsvr       => true,
+    replset        => 'rs1',
+    bind_ip        => ['0.0.0.0'],
+    dbpath         => '/data/db',
+    storage_engine => 'wiredTiger',
   }
   -> class {'mongodb::client': }
   mongodb_replset{'rs1':
