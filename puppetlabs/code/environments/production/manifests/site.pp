@@ -1,11 +1,14 @@
+## local variables
+$mongo_repo = 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/'
+
 ## persistent puppetagent
 service { 'puppet':
     ensure  => running,
     enable  => true,
 }
 
-## configsrv1 member
-node 'mongocfg1' {
+## configsrv members
+node /^mongocfg(1|2|3)$/ {
   file { '/data':
     ensure => 'directory',
     owner  => 'root',
@@ -14,69 +17,13 @@ node 'mongocfg1' {
   }
   -> class {'mongodb::globals':
     manage_package_repo => true,
-    repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
+    repo_location       => $mongo_repo,
   }
   -> class {'mongodb::server':
-    shardsvr => true,
-    replset  => 'cfg1',
-    bind_ip  => [$::ipaddress],
-    dbpath   => '/data/db',
-  }
-  -> class {'mongodb::client': }
-  mongodb_replset{'cfg1':
-    members => [
-        '192.168.0.11:27019',
-        '192.168.0.12:27019',
-        '192.168.0.13:27019',
-    ],
-  }
-}
-
-## configsrv2 member
-node 'mongocfg2' {
-  file { '/data':
-    ensure => 'directory',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
-  }
-  -> class {'mongodb::globals':
-    manage_package_repo => true,
-    repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
-  }
-  -> class {'mongodb::server':
-    shardsvr => true,
-    replset  => 'cfg1',
-    bind_ip  => [$::ipaddress],
-    dbpath   => '/data/db',
-  }
-  -> class {'mongodb::client': }
-  mongodb_replset{'cfg1':
-    members => [
-        '192.168.0.11:27019',
-        '192.168.0.12:27019',
-        '192.168.0.13:27019',
-    ],
-  }
-}
-
-## configsrv3 member
-node 'mongocfg3' {
-  file { '/data':
-    ensure => 'directory',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
-  }
-  -> class {'mongodb::globals':
-    manage_package_repo => true,
-    repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
-  }
-  -> class {'mongodb::server':
-    shardsvr => true,
-    replset  => 'cfg1',
-    bind_ip  => [$::ipaddress],
-    dbpath   => '/data/db',
+    configsvr => true,
+    replset   => 'cfg1',
+    bind_ip   => ['0.0.0.0'],
+    dbpath    => '/data/db',
   }
   -> class {'mongodb::client': }
   mongodb_replset{'cfg1':
@@ -96,12 +43,16 @@ node 'mongocfg3' {
 node 'mongos' {
   class {'mongodb::globals':
     manage_package_repo => true,
-    repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
+    repo_location       => $mongo_repo,
   }
   -> class {'mongodb::client': }
   -> mongodb_replset { cfg1:
     ensure  => present,
-    members => ['192.168.0.11:27019', '192.168.0.12:27019', '192.168.0.13:27019']
+    members => [
+      '192.168.0.11:27019',
+      '192.168.0.12:27019',
+      '192.168.0.13:27019'
+    ]
   }
   -> class {'mongodb::mongos':
     configdb => 'cfg1/192.168.0.11:27019',
@@ -116,9 +67,8 @@ node 'mongos' {
   }
 }
 
-
-## shard1 member
-node 'mongod1' {
+## shard1 members
+node /^mongod(1|2|3)$/ {
   file { '/data':
     ensure => 'directory',
     owner  => 'root',
@@ -127,68 +77,12 @@ node 'mongod1' {
   }
   -> class {'mongodb::globals':
     manage_package_repo => true,
-    repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
+    repo_location       => $mongo_repo,
   }
   -> class {'mongodb::server':
     shardsvr => true,
     replset  => 'rs1',
-    bind_ip  => [$::ipaddress],
-    dbpath   => '/data/db',
-  }
-  -> class {'mongodb::client': }
-  mongodb_replset{'rs1':
-    members => [
-        '192.168.0.14:27018',
-        '192.168.0.15:27018',
-        '192.168.0.16:27018',
-    ],
-  }
-}
-
-## shard1 member
-node 'mongod2' {
-  file { '/data':
-    ensure => 'directory',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
-  }
-  -> class {'mongodb::globals':
-    manage_package_repo => true,
-    repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
-  }
-  -> class {'mongodb::server':
-    shardsvr => true,
-    replset  => 'rs1',
-    bind_ip  => [$::ipaddress],
-    dbpath   => '/data/db',
-  }
-  -> class {'mongodb::client': }
-  mongodb_replset{'rs1':
-    members => [
-        '192.168.0.14:27018',
-        '192.168.0.15:27018',
-        '192.168.0.16:27018',
-    ],
-  }
-}
-
-## shard1 member
-node 'mongod3' {
-  file { '/data':
-    ensure => 'directory',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
-  }
-  -> class {'mongodb::globals':
-    manage_package_repo => true,
-    repo_location       => 'https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/',
-  }
-  -> class {'mongodb::server':
-    shardsvr => true,
-    replset  => 'rs1',
-    bind_ip  => [$::ipaddress],
+    bind_ip  => ['0.0.0.0'],
     dbpath   => '/data/db',
   }
   -> class {'mongodb::client': }
