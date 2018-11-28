@@ -9,13 +9,7 @@ service { 'puppet':
 
 ## configsrv members
 node /^mongocfg(1|2|3)$/ {
-  file { '/data':
-    ensure => 'directory',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => $mongo_repo,
   }
@@ -26,13 +20,6 @@ node /^mongocfg(1|2|3)$/ {
     dbpath    => '/data/db',
   }
   -> class {'mongodb::client': }
-  mongodb_replset{'cfg1':
-    members => [
-        '192.168.0.11:27019',
-        '192.168.0.12:27019',
-        '192.168.0.13:27019',
-    ],
-  }
 }
 
 ##
@@ -46,16 +33,8 @@ node 'mongos' {
     repo_location       => $mongo_repo,
   }
   -> class {'mongodb::client': }
-  -> mongodb_replset { cfg1:
-    ensure  => present,
-    members => [
-      '192.168.0.11:27019',
-      '192.168.0.12:27019',
-      '192.168.0.13:27019'
-    ]
-  }
   -> class {'mongodb::mongos':
-    configdb => 'cfg1/192.168.0.11:27019',
+    configdb => 'cfg1/192.168.0.11:27019, 192.168.0.12:27019, 192.168.0.13:27019',
   }
   -> mongodb_shard { 'rs1':
     member => 'rs1/192.168.0.14:27018',
@@ -69,13 +48,7 @@ node 'mongos' {
 
 ## shard1 members
 node /^mongod(1|2|3)$/ {
-  file { '/data':
-    ensure => 'directory',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
-  }
-  -> class {'mongodb::globals':
+  class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => $mongo_repo,
   }
