@@ -41,13 +41,6 @@ node /^mongocfg(1|2|3)$/ {
 ## @configdb, connection string '<config replset name>/<host1:port>,<host2:port>,[...]'
 ##
 node 'mongos' {
-  file {'/data':
-    ensure => directory,
-    owner  => root,
-    group  => root,
-    mode   => '0755',
-  }
-
   class {'mongodb::globals':
     manage_package_repo => true,
     repo_location       => $mongo_repo,
@@ -89,6 +82,7 @@ node /^mongod(1|2|3)$/ {
     shardsvr       => true,
     replset        => 'rs1',
     bind_ip        => ['0.0.0.0'],
+    dbpath         => '/data/db',
     storage_engine => 'wiredTiger',
   }
   -> class {'mongodb::client': }
