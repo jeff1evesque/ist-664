@@ -47,7 +47,7 @@ node 'mongos' {
   }
   -> class {'mongodb::client': }
   -> class {'mongodb::mongos':
-    configdb => 'cfg1/192.168.0.11:27019, 192.168.0.12:27019, 192.168.0.13:27019',
+    configdb => 'cfg1/192.168.0.11:27019,192.168.0.12:27019,192.168.0.13:27019',
   }
   -> mongodb_shard { 'rs1':
     member => 'rs1/192.168.0.14:27018',
