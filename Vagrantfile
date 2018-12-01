@@ -30,7 +30,7 @@ servers=[
     :hostname => 'docker',
     :ip => '192.168.0.10',
     :box => 'ubuntu/xenial64',
-    :ram => 4096,
+    :ram => 5120,
     :cpu => 4
   },
 ]
@@ -59,6 +59,13 @@ Vagrant.configure(2) do |config|
                 ## build containers
                 /usr/local/bin/docker-compose -f /vagrant/docker-compose.yml up -d
 
+                ## app packages
+                sudo apt install -y python3-pip dos2unix
+                sudo pip3 install pymongo MongoDBProxy
+
+                ## ensure utility script executable
+                dos2unix /vagrant/utility/*
+
                 ## config servers replica set
 	            docker exec -it mongocfg1 bash -c "echo 'rs.initiate({_id: \"mongors1conf\",configsvr: true, members: [{ _id : 0, host : \"mongocfg1\" },{ _id : 1, host : \"mongocfg2\" }, { _id : 2, host : \"mongocfg3\" }]})' | mongo"
                 docker exec -it mongocfg1 bash -c "echo 'rs.status()' | mongo"
@@ -71,12 +78,13 @@ Vagrant.configure(2) do |config|
                 docker exec -it mongos1 bash -c "echo 'sh.addShard(\"mongors1/mongors1n1\")' | mongo "
                 docker exec -it mongos1 bash -c "echo 'sh.status()' | mongo "
 
-                sudo apt-get install -y dos2unix
-                dos2unix /vagrant/utility/*
+                ## create database: ensure it is sharded
+                docker exec -it mongors1n1 bash -c "echo 'use db-nlp' | mongo"
+                docker exec -it mongos1 bash -c "echo 'sh.enableSharding(\"db-nlp\")' | mongo "
 
-                ## app packages
-                sudo apt install -y python3-pip
-                sudo pip3 install pymongo
+                ## create collection: define key for sharding
+                docker exec -it mongors1n1 bash -c "echo 'db.createCollection(\"db-nlp.reddit\")' | mongo "
+                docker exec -it mongos1 bash -c "echo 'sh.shardCollection(\"db-nlp.reddit\", {\"shardingField\" : 1})' | mongo "
             SHELL
             node.vm.network 'private_network', ip: machine[:ip]
         end
