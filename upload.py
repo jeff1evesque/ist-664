@@ -12,7 +12,6 @@ from os.path import isfile, join
 from pymongo import MongoClient
 from config import (
     mongos_endpoint,
-    mongos_port,
     database,
     collection,
     data_directory
@@ -20,10 +19,7 @@ from config import (
 
 
 # endpoint
-client = MongoClient('{}:{}'.format(
-    mongos_endpoint,
-    mongos_port
-))
+client = MongoClient(host=mongos_endpoint)
 
 # database + collection
 db = client[database]
