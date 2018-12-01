@@ -164,7 +164,7 @@ fi
 sudo mkdir -p "/etc/puppetlabs/code/environments/$PUPPET_ENVIRONMENT"
 
 ## set puppet environment
-sudo /opt/puppetlabs/bin/puppet config set environment "$PUPPET_ENVIRONMENT"
+sudo /opt/puppetlabs/bin/puppet config --section agent set environment "$PUPPET_ENVIRONMENT"
 
 ## default search domain
 LOCAL_FQDN="$HOSTNAME"

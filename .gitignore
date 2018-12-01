@@ -1,2 +1,7 @@
 # ignore files
 config.py
+ubuntu-xenial-16.04-cloudimg-console.log
+
+# ignore directories
+.vagrant/
+__pycache__/
