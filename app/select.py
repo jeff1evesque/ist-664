@@ -14,10 +14,11 @@ def select(client, database, collection):
     db = client[database]
     col = db[collection]
 
+    ## nonunique 'collapsed' key combines all documents
     map = Code(
         "function () {"
         "  emit("
-        "    'jeffbob',"
+        "    'collapsed',"
         "    {"
         "      'id': this.id,"
         "      'parent_id': this.parent_id,"
@@ -36,19 +37,21 @@ def select(client, database, collection):
         "  wantedKey = 'parent_id';"
         "  var comments = [];"
         "  var replies = [];"
+        "  var match_id = [];"
         "  for (var i = 0; i < values.length; i++) {"
         "    if ("
         "      values[i] &&"
         "      values[i].parent_id"
         "    ) {"
-        "      wantedVal = values[i].parent_id.split('_')[1];"
+        "      var wantedParent = values[i].parent_id.split('_')[1];"
         "      for (var j = 0; j < values.length; j++) {"
         "        if ("
-        "            values[j].id === wantedVal &&"
+        "            wantedParent == values[j].id &&"
         "            values[j].body != values[i].body"
         "        ) {"
-        "          comments.push(values[j].body);"
         "          replies.push(values[j].body);"
+        "          comments.push(values[i].body);"
+        "          match_id.push(wantedParent);"
         "        }"
         "      }"
         "    }"
@@ -57,7 +60,7 @@ def select(client, database, collection):
         "    'id': values[0].id,"
         "    'comments': comments,"
         "    'replies': replies,"
-        "    'wanted_val': wantedVal"
+        "    'match_id': match_id,"
         "  }"
         "}"
     )
