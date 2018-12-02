@@ -18,6 +18,8 @@ def select(client, database, collection):
     ## nonunique 'collapsed' key combines all documents within
     ##     the same collection.
     ##
+    ## Note: 'comment' is a needed structure by the below reducer.
+    ##
     map = Code(
         "function() {"
         "  emit("
@@ -26,7 +28,8 @@ def select(client, database, collection):
         "      'id': this.id,"
         "      'score': this.score,"
         "      'parent_id': this.parent_id,"
-        "      'body': this.body"
+        "      'body': this.body,"
+        "      'comment': this.body,"
         "    }"
         "  );"
         "}"
@@ -58,9 +61,9 @@ def select(client, database, collection):
         "            values[j].body.trim() != '[deleted]' &&"
         "            wantedParent == values[j].id"
         "        ) {"
-        "          posts = posts.concat(values[j].body);"
-        "          match_id = match_id.concat(wantedParent);"
-        "          comments = comments.concat(comment);"
+        "          var posts = posts.concat(values[j].body);"
+        "          var match_id = match_id.concat(wantedParent);"
+        "          var comments = comments.concat(comment);"
         "        }"
         "      }"
         "    }"
