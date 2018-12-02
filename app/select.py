@@ -14,54 +14,62 @@ def select(client, database, collection):
     db = client[database]
     col = db[collection]
 
-    ## nonunique 'collapsed' key combines all documents
+    ##
+    ## nonunique 'collapsed' key combines all documents within
+    ##     the same collection.
+    ##
     map = Code(
-        "function () {"
+        "function() {"
         "  emit("
         "    'collapsed',"
         "    {"
         "      'id': this.id,"
+        "      'score': this.score,"
         "      'parent_id': this.parent_id,"
-        "      'body': this.body,"
+        "      'body': this.body"
         "    }"
         "  );"
         "}"
     )
 
     #
-    # @to (key), the parent comment
-    # @from (value), reply to parent comment
+    # @to (key), the parent post
+    # @from (value), reply to parent posts
     #
     reduce = Code(
         "function (key, values) {"
-        "  wantedKey = 'parent_id';"
+        "  var posts = [];"
         "  var comments = [];"
-        "  var replies = [];"
         "  var match_id = [];"
         "  for (var i = 0; i < values.length; i++) {"
         "    if ("
         "      values[i] &&"
-        "      values[i].parent_id"
+        "      values[i].body &&"
+        "      values[i].parent_id &&"
+        "      values[i].body.trim() != '[deleted]'"
         "    ) {"
+        "      var comment = values[i].body;"
         "      var wantedParent = values[i].parent_id.split('_')[1];"
         "      for (var j = 0; j < values.length; j++) {"
         "        if ("
-        "            wantedParent == values[j].id &&"
-        "            values[j].body != values[i].body"
+        "            values[j] &&"
+        "            values[j].body &&"
+        "            values[j].body != values[i].body &&"
+        "            values[j].body.trim() != '[deleted]' &&"
+        "            wantedParent == values[j].id"
         "        ) {"
-        "          replies.push(values[j].body);"
-        "          comments.push(values[i].body);"
-        "          match_id.push(wantedParent);"
+        "          posts = posts.concat(values[j].body);"
+        "          match_id = match_id.concat(wantedParent);"
+        "          comments = comments.concat(comment);"
         "        }"
         "      }"
         "    }"
         "  }"
         "  return {"
-        "    'id': values[0].id,"
-        "    'comments': comments,"
-        "    'replies': replies,"
-        "    'match_id': match_id,"
-        "  }"
+        "    posts: posts,"
+        "    comments: comments,"
+        "    match_id: match_id"
+        "  };"
         "}"
     )
 
