@@ -27,7 +27,7 @@ end
 ## configurations
 servers=[
   {
-    :hostname => 'docker',
+    :hostname => 'development',
     :ip => '192.168.0.10',
     :box => 'ubuntu/xenial64',
     :ram => 5120,
@@ -45,46 +45,12 @@ Vagrant.configure(2) do |config|
                 vb.customize ['modifyvm', :id, '--memory', machine[:ram]]
             end
             node.vm.provision 'shell', inline: <<-SHELL
-                ## install docker + docker-compose
-                sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common
-                curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-                sudo add-apt-repository\
-                    "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-                sudo apt-get update -y
-                sudo apt-get -y install docker-ce="18.03.0~ce-0~ubuntu"
-
-                sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-                sudo chmod +x /usr/local/bin/docker-compose
-
-                ## build containers
-                /usr/local/bin/docker-compose -f /vagrant/docker-compose.yml up -d
-
-                ## app packages
-                sudo apt install -y python3-pip dos2unix
-                sudo pip3 install pymongo MongoDBProxy
-
-                ## ensure utility script executable
-                dos2unix /vagrant/utility/*
-
-                ## config servers replica set
-	            docker exec -it mongocfg1 bash -c "echo 'rs.initiate({_id: \"mongors1conf\",configsvr: true, members: [{ _id : 0, host : \"mongocfg1\" },{ _id : 1, host : \"mongocfg2\" }, { _id : 2, host : \"mongocfg3\" }]})' | mongo"
-                docker exec -it mongocfg1 bash -c "echo 'rs.status()' | mongo"
-
-                ## shard replica set
-                docker exec -it mongors1n1 bash -c "echo 'rs.initiate({_id : \"mongors1\", members: [{ _id : 0, host : \"mongors1n1\" },{ _id : 1, host : \"mongors1n2\" },{ _id : 2, host : \"mongors1n3\" }]})' | mongo"
-                docker exec -it mongors1n1 bash -c "echo 'rs.status()' | mongo"
-
-                ## connect shard to routers
-                docker exec -it mongos1 bash -c "echo 'sh.addShard(\"mongors1/mongors1n1\")' | mongo "
-                docker exec -it mongos1 bash -c "echo 'sh.status()' | mongo "
-
-                ## create database: ensure it is sharded
-                docker exec -it mongors1n1 bash -c "echo 'use db-nlp' | mongo"
-                docker exec -it mongos1 bash -c "echo 'sh.enableSharding(\"db-nlp\")' | mongo "
-
-                ## create collection: define key for sharding
-                docker exec -it mongors1n1 bash -c "echo 'db.createCollection(\"db-nlp.reddit\")' | mongo "
-                docker exec -it mongos1 bash -c "echo 'sh.shardCollection(\"db-nlp.reddit\", {\"shardingField\" : 1})' | mongo "
+                sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+                echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+                sudo apt-get -y update
+                sudo apt-get install -y mongodb-org python3-pip dos2unix
+                sudo pip3 install pymongo
+                sudo service mongod start
             SHELL
             node.vm.network 'private_network', ip: machine[:ip]
         end
