@@ -20,54 +20,30 @@ def select(client, database, collection):
     #
     # Note: 'comment' is a needed structure by the below reducer.
     #
-    map = Code(
-        "function() {"
-        "  emit("
-        "    'collapsed',"
-        "    {"
-        "      'id': this.id,"
-        "      'score': this.score,"
-        "      'parent_id': this.parent_id,"
-        "      'body': this.body,"
-        "      'comment': this.body,"
-        "    }"
-        "  );"
-        "}"
+    map = Code('''
+        function() {
+          emit(
+            this.link_id,
+            {
+              'id': this.id,
+              'score': this.score,
+              'parent_id': this.parent_id,
+              'body': this.body,
+              'comment': this.body,
+            }"
+          );"
+        '''}
     )
 
     #
     # @to (key), the parent post
     # @from (value), reply to parent posts
     #
-    reduce = Code(
-        "function (key, values) {"
-        "  var results = { posts: [], comments: [], match_id: [] };"
-        "  for (var i = 0; i < values.length; i++) {"
-        "    if ("
-        "      values[i] &&"
-        "      values[i].body &&"
-        "      values[i].parent_id &&"
-        "      values[i].body.trim() != '[deleted]'"
-        "    ) {"
-        "      var comment = values[i].body;"
-        "      var wantedParent = values[i].parent_id.split('_')[1];"
-        "      for (var j = 0; j < values.length; j++) {"
-        "        if ("
-        "            values[j] &&"
-        "            values[j].body &&"
-        "            values[j].body != values[i].body &&"
-        "            values[j].body.trim() != '[deleted]' &&"
-        "            wantedParent == values[j].id"
-        "        ) {"
-        "          results.posts.push(values[j].body);"
-        "          results.match_id.push(wantedParent);"
-        "          results.comments.push(comment);"
-        "        }"
-        "      };"
-        "    }"
-        "  }"
-        "  return results;"
-        "}"
+    reduce = Code('''
+        function (key, values) {
+          var results = { posts: [], comments: [], match_id: [], score: [], link_id: key };
+          return {values};
+        '''}
     )
 
     # select data
