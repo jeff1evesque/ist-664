@@ -70,9 +70,21 @@ def select(client, database, collection):
               }
             }
           }
-          return { results };
+
+          if (
+            results.posts.length > 0 &&
+            results.comments.length > 0 &&
+            results.match_id.length > 0 &&
+            results.score.length > 0
+          ) {
+            return { results };
+          }
         }
     ''')
 
     # select data
-    return col.map_reduce(map, reduce, 'to_from')
+    return col.map_reduce(
+        map=map,
+        reduce=reduce,
+        out='to_from'
+    )
