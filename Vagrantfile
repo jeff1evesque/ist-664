@@ -30,7 +30,7 @@ servers=[
     :hostname => 'development',
     :ip => '192.168.0.10',
     :box => 'ubuntu/xenial64',
-    :ram => 5120,
+    :ram => 4096,
     :cpu => 4
   },
 ]
