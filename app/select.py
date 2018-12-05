@@ -65,7 +65,7 @@ def select(client, database, collection):
                   results.posts = results.posts.concat(values[j].body);
                   results.match_id = results.match_id.concat(wantedParent);
                   results.comments = results.comments.concat(comment);
-                  results.score = results.score.concat(comment);
+                  results.score = results.score.concat(score);
                 }
               }
             }
