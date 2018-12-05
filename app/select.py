@@ -14,12 +14,7 @@ def select(client, database, collection):
     db = client[database]
     col = db[collection]
 
-    #
-    # nonunique 'collapsed' key combines all documents within
-    #     the same collection.
-    #
-    # Note: 'comment' is a needed structure by the below reducer.
-    #
+    # emit the 'values' to the reduce
     map = Code('''
         function() {
           emit(
