@@ -81,19 +81,19 @@ def select(client, database, collection):
 
     # finalize: remove single case (reducer skipped)
     finalize = Code('''
-    function finalize(key, values) {
-      if (
-        values &&
-        values.results &&
-        values.results.posts &&
-        values.results.comments &&
-        values.results.posts[0].length > 0 &&
-        values.results.comments[0].length > 0 &&
-        values.results.posts[0] != values.results.comments[0]
-      ) {
-        return values.results;
-      }
-    }
+        function finalize(key, values) {
+          if (
+            values &&
+            values.results &&
+            values.results.posts &&
+            values.results.comments &&
+            values.results.posts[0].length > 0 &&
+            values.results.comments[0].length > 0 &&
+            values.results.posts[0] != values.results.comments[0]
+          ) {
+            return values.results;
+          }
+        }
     ''')
 
     # select data
