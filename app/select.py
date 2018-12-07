@@ -17,16 +17,22 @@ def select(client, database, collection):
     # emit the 'values' to the reduce
     map = Code('''
         function() {
-          emit(
-            this.link_id,
-            {
-              'id': [this.id],
-              'score': [this.score],
-              'parent_id': [this.parent_id],
-              'body': [this.body],
-              'comment': [this.body]
-            }
-          );
+          if (
+            this.body != 'repost' &&
+            this.body != '[deleted]' &&
+            this.body != '[removed]'
+          ) {
+            emit(
+              this.link_id,
+              {
+                'id': [this.id],
+                'score': [this.score],
+                'parent_id': [this.parent_id],
+                'body': [this.body],
+                'comment': [this.body]
+              }
+            );
+          }
         }
     ''')
 
@@ -41,9 +47,7 @@ def select(client, database, collection):
             if (
               values[i] &&
               values[i].body &&
-              values[i].parent_id &&
-              values[i].body[0].trim() != '[deleted]' &&
-              values[i].body[0].trim() != '[removed]'
+              values[i].parent_id
             ) {
               var comment = values[i].body;
               var score = values[i].score;
@@ -53,11 +57,9 @@ def select(client, database, collection):
                     values[j] &&
                     values[j].body &&
                     values[j].body != values[i].body &&
-                    values[j].body[0].trim() != '[deleted]' &&
-                    values[j].body[0].trim() != '[removed]' &&
                     wantedParent == values[j].id
                 ) {
-                  results.posts = results.posts.concat(values[j].body);
+                  results.posts = results.posts.concat(values[j].body[0].trim());
                   results.match_id = results.match_id.concat(wantedParent);
                   results.comments = results.comments.concat(comment);
                   results.score = results.score.concat(score);
@@ -77,9 +79,27 @@ def select(client, database, collection):
         }
     ''')
 
+    # finalize: remove single case (reducer skipped)
+    finalize = Code('''
+        function finalize(key, values) {
+          if (
+            values &&
+            values.results &&
+            values.results.posts &&
+            values.results.comments &&
+            values.results.posts[0].length > 0 &&
+            values.results.comments[0].length > 0 &&
+            values.results.posts[0] != values.results.comments[0]
+          ) {
+            return values.results;
+          }
+        }
+    ''')
+
     # select data
     return col.map_reduce(
         map=map,
         reduce=reduce,
+        finalize=finalize,
         out='to_from'
     )
