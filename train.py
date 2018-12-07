@@ -14,11 +14,21 @@ from config import (
     collection
 )
 
+# local variables
+combined = {}
+
 # create single client
 client = MongoClient(mongos_endpoint)
 
-# create sequence pairs
-pairs = select(client, database, collection)
-for doc in pairs.find():
-    print(doc)
+# combine sequence pairs
+results = select(client, database, collection)
+for doc in results.find():
+    if doc['value']:
+        for k, v in doc['value'].items():
+            if k in combined.keys():
+                combined[k] += v
+            else:
+                combined[k] = v
+
+print(combined)
 
