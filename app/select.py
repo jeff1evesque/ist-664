@@ -59,9 +59,17 @@ def select(client, database, collection):
                     values[j].body != values[i].body &&
                     wantedParent == values[j].id
                 ) {
-                  results.posts = results.posts.concat(values[j].body[0].split(/[ ,]+/));
+                  //
+                  // posts + comments: collapse all whitespace to single
+                  //     whitespace, then append to array
+                  //
+                  results.posts = results.posts.concat(
+                    values[j].body[0].replace(/\s+/g, ' ').trim().split(/[ ,]+/)
+                  );
+                  results.comments = results.comments.concat(
+                    comment[0].replace(/\s+/g, ' ').trim().split(/[ ,]+/)
+                  );
                   results.match_id = results.match_id.concat(wantedParent);
-                  results.comments = results.comments.concat(comment[0].split(/[ ,]+/));
                   results.score = results.score.concat(score);
                 }
               }
