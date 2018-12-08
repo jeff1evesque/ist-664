@@ -61,7 +61,7 @@ def select(client, database, collection):
                 ) {
                   //
                   // posts + comments: collapse all whitespace to single
-                  //     whitespace, then append to array.
+                  //     whitespace, then append tokenized sentence.
                   //
                   results.posts = results.posts.concat(
                     values[j].body[0].replace(/\s+/g, ' ').trim().split(/[ ,]+/)
