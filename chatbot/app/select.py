@@ -45,7 +45,7 @@ def select(client, database, collection):
           const regexParts = [
               /\s+/,
               /\]|\[|\(|\)/,
-              /-&gt;|&lt;/,
+              /-&gt;|&gt;|&lt;/,
               /(https?:\/\/(?:www\.|(?!www)|[a-zA-Z]+\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/,
               /--|\*|\.\.\.|"|:-|:|!!!|\+/
           ],
