@@ -42,6 +42,7 @@ def select(client, database, collection):
     #
     reduce = Code('''
         function (key, values) {
+          const tokenRegex = /\s+|\]|\[|\(|\)/g;
           var results = { posts: [], comments: [], match_id: [], score: [] };
           for (var i = 0; i < values.length; i++) {
             if (
@@ -59,9 +60,18 @@ def select(client, database, collection):
                     values[j].body != values[i].body &&
                     wantedParent == values[j].id
                 ) {
-                  results.posts = results.posts.concat(values[j].body[0].trim());
+                  //
+                  // posts + comments: collapse all whitespace to single
+                  //     whitespace, remove bracket and parentheses, then
+                  //     append tokenized sentence.
+                  //
+                  results.posts = results.posts.concat(
+                    values[j].body[0].replace(tokenRegex, ' ').trim().split(/[ ,]+/)
+                  );
+                  results.comments = results.comments.concat(
+                    comment[0].replace(tokenRegex, ' ').trim().split(/[ ,]+/)
+                  );
                   results.match_id = results.match_id.concat(wantedParent);
-                  results.comments = results.comments.concat(comment);
                   results.score = results.score.concat(score);
                 }
               }
