@@ -46,7 +46,7 @@ def select(client, database, collection):
               /\s+/,
               /\]|\[|\(|\)/,
               /-&gt;|&gt;|&lt;/,
-              /\b\$?[0-9]{6,}\b/,
+              /$?[0-9]{6,}/,
               /https?:\/\/|https?;\/\//,
               /((?:www\.|(?!www)|[a-zA-Z]+\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,})/,
               /((?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/,
@@ -109,7 +109,9 @@ def select(client, database, collection):
             values &&
             values.results &&
             values.results.posts &&
+            values.results.posts[0] &&
             values.results.comments &&
+            values.results.comments[0] &&
             values.results.posts[0].length > 0 &&
             values.results.comments[0].length > 0 &&
             values.results.posts[0] != values.results.comments[0]
