@@ -42,6 +42,7 @@ def select(client, database, collection):
     #
     reduce = Code('''
         function (key, values) {
+          const singleton = ['.', '-', '$', ',', ':', '%', "'"]
           const regexParts = [
               /\s+/,
               /\]|\[|\(|\)/,
@@ -51,7 +52,8 @@ def select(client, database, collection):
               /((?:www\.|(?!www)|[a-zA-Z]+\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,})/,
               /((?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/,
               /[^\x01-\x7F]+/,
-              /--|\*|\.\.\.|"|:-|:|!!!|\+|=|\/\/|;/
+              /--|\*|\.\.\.|"|:-|:|!!!|\?\?\?|\+|=|\/\/|;/,
+              /\s(\.-\$,:%')\s/
           ],
           regexString  = regexParts.map(function(x){return x.source}).join('|'),
           tokenRegex = new RegExp(regexString, 'g');
@@ -61,7 +63,8 @@ def select(client, database, collection):
             if (
               values[i] &&
               values[i].body &&
-              values[i].parent_id
+              values[i].parent_id &&
+              ! singleton.includes(values[i].body)
             ) {
               var comment = values[i].body;
               var score = values[i].score;
@@ -71,7 +74,8 @@ def select(client, database, collection):
                     values[j] &&
                     values[j].body &&
                     values[j].body != values[i].body &&
-                    wantedParent == values[j].id
+                    wantedParent == values[j].id &&
+                    ! singleton.includes(values[j].body)
                 ) {
                   //
                   // posts + comments: collapse all whitespace to single
