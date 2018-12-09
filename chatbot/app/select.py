@@ -46,8 +46,11 @@ def select(client, database, collection):
               /\s+/,
               /\]|\[|\(|\)/,
               /-&gt;|&gt;|&lt;/,
-              /(https?:\/\/(?:www\.|(?!www)|[a-zA-Z]+\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/,
-              /--|\*|\.\.\.|"|:-|:|!!!|\+/
+              /https?:\/\/|https?;\/\//,
+              /((?:www\.|(?!www)|[a-zA-Z]+\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,})/,
+              /((?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/,
+              /[^\x01-\x7F]+/,
+              /--|\*|\.\.\.|"|:-|:|!!!|\+|=|\/\/|;/
           ],
           regexString  = regexParts.map(function(x){return x.source}).join('|'),
           tokenRegex = new RegExp(regexString, 'g');
@@ -74,12 +77,12 @@ def select(client, database, collection):
                   //     whitespace, remove bracket and parentheses, then
                   //     append tokenized sentence.
                   //
-                  results.posts = results.posts.concat(
+                  results.posts = results.posts.concat([
                     values[j].body[0].replace(tokenRegex, ' ').trim().split(/[ ,]+/)
-                  );
-                  results.comments = results.comments.concat(
+                  ]);
+                  results.comments = results.comments.concat([
                     comment[0].replace(tokenRegex, ' ').trim().split(/[ ,]+/)
-                  );
+                  ]);
                   results.match_id = results.match_id.concat(wantedParent);
                   results.score = results.score.concat(score);
                 }
