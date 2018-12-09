@@ -42,7 +42,14 @@ def select(client, database, collection):
     #
     reduce = Code('''
         function (key, values) {
-          const tokenRegex = /\s+|\]|\[|\(|\)/g;
+          const regexParts = [
+              /\s+/,
+              /\]|\[|\(|\)/,
+              /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/
+          ],
+          regexString  = regexParts.map(function(x){return x.source}).join('|'),
+          tokenRegex = new RegExp(regexString, 'g');
+
           var results = { posts: [], comments: [], match_id: [], score: [] };
           for (var i = 0; i < values.length; i++) {
             if (
