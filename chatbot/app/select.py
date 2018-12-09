@@ -46,7 +46,7 @@ def select(client, database, collection):
               /\s+/,
               /\]|\[|\(|\)/,
               /-&gt;|&gt;|&lt;/,
-              /$?[0-9]{6,}/,
+              /\$?[0-9]{6,}/,
               /https?:\/\/|https?;\/\//,
               /((?:www\.|(?!www)|[a-zA-Z]+\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,})/,
               /((?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/,
