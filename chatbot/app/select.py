@@ -45,7 +45,9 @@ def select(client, database, collection):
           const regexParts = [
               /\s+/,
               /\]|\[|\(|\)/,
-              /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/
+              /-&gt;|&gt;|&lt;/,
+              /(https?:\/\/(?:www\.|(?!www)|[a-zA-Z]+\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/,
+              /--|\*|\.\.\.|"|:-|:|!!!|\+/
           ],
           regexString  = regexParts.map(function(x){return x.source}).join('|'),
           tokenRegex = new RegExp(regexString, 'g');
