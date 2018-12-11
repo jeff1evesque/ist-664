@@ -24,6 +24,7 @@ client = MongoClient(mongos_endpoint)
 results = select(client, database, collection)
 for doc in results.find():
     if doc['value']:
+        # collapse mapreduce instances
         for k, v in doc['value'].items():
             if k in combined.keys():
                 combined[k] += v
@@ -31,4 +32,3 @@ for doc in results.find():
                 combined[k] = v
 
 print(combined)
-
