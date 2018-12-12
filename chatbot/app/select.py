@@ -83,10 +83,10 @@ def select(client, database, collection):
                   //     append tokenized sentence.
                   //
                   results.posts = results.posts.concat([
-                    values[j].body[0].replace(tokenRegex, ' ').trim().split(/[ ,]+/)
+                    values[j].body[0].replace(tokenRegex, ' ').trim()
                   ]);
                   results.comments = results.comments.concat([
-                    comment[0].replace(tokenRegex, ' ').trim().split(/[ ,]+/)
+                    comment[0].replace(tokenRegex, ' ').trim()
                   ]);
                   results.match_id = results.match_id.concat(wantedParent);
                   results.score = results.score.concat(score);
