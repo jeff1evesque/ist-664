@@ -40,21 +40,21 @@ for doc in results.find():
 idx = int(len(combined['comments']) * 0.9)
 
 # create nmt required input files
-if not os.path.exists(directory):
-    os.makedirs(directory)
+if not os.path.exists('analysis/data'):
+    os.makedirs('analysis/data')
 
-    with open('analysis/test.from', 'a+') as f:
+    with open('analysis/data/test.from', 'a+') as f:
         for content in combined['posts'][idx:]:
             f.write(content+'\n')
 
-    with open('analysis/test.to', 'a+') as f:
+    with open('analysis/data/test.to', 'a+') as f:
         for content in combined['comments'][idx:]:
             f.write(content+'\n')
 
-    with open('analysis/train.from', 'a+') as f:
+    with open('analysis/data/train.from', 'a+') as f:
         for content in combined['posts'][:idx]:
             f.write(content+'\n')
 
-    with open('analysis/train.to', 'a+') as f:
+    with open('analysis/data/train.to', 'a+') as f:
         for content in combined['comments'][:idx]:
             f.write(content+'\n')
