@@ -63,7 +63,7 @@ Vagrant.configure(2) do |config|
                 ## chatbot: download + unzip
                 wget https://www.dropbox.com/s/p1say7bqpn8gfmt/#{dropbox_project}.zip
                 unzip #{dropbox_project}.zip && rm #{dropbox_project}.zip
-                cp app/inference #{nmt_chatbot}/
+                cp app/inference #{dropbox_project}/
 
             SHELL
             node.vm.network 'private_network', ip: machine[:ip]
