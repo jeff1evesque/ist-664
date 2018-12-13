@@ -63,7 +63,7 @@ Vagrant.configure(2) do |config|
 
                 ## chatbot: download + unzip
                 wget "https://www.dropbox.com/s/p1say7bqpn8gfmt/#{dropbox_project}.zip" -O "#{project_root}/#{dropbox_project}.zip"
-                unzip "#{project_root}/#{dropbox_project}.zip" -d $project_root
+                unzip "#{project_root}/#{dropbox_project}.zip" -d "#{project_root}"
                 rm "#{project_root}/#{dropbox_project}.zip"
                 cp -f "#{project_root}/app/inference.py" "#{project_root}/#{dropbox_project}/inference.py"
 
