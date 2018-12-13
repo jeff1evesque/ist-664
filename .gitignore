@@ -1,11 +1,11 @@
 # ignore files
 config.py
-
-# ignore directories
-**/__pycache__
+**/*.swp
+chatbot/nmt_chatbot.zip
 ubuntu-xenial-16.04-cloudimg-console.log
 
 # ignore directories
+**/__pycache__
 .vagrant/
-__pycache__/
-**/*.swp
+chatbot/analysis/
+chatbot/nmt_chatbot/
