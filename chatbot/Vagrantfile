@@ -10,6 +10,7 @@
 ##
 required_plugins  = %w(vagrant-vbguest)
 plugin_installed  = false
+project_root      = '/vagrant'
 dropbox_project   = 'nmt_chatbot'
 
 ## install vagrant plugins
@@ -47,23 +48,23 @@ Vagrant.configure(2) do |config|
             end
             node.vm.provision 'shell', inline: <<-SHELL
                 ## install mongodb
-                sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F3                                                                                     68818C72E52529D4
-                echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0                                                                                      multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
-                apt-get -y update
-                apt-get install -y mongodb-org python3-pip dos2unix
-                pip3 install pymongo
+                sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+                echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+                sudo apt-get install -y mongodb-org python3-pip dos2unix unzip
+                sudo pip3 install pymongo
 
                 ## start mongodb
-                service mongod start
+                sudo service mongod start
 
                 ## chatbot dependencies
-                pip3 install numpy regex python-Levenshtein colorama unzip
-                pip3 install tensorflow==1.4.0
+                sudo pip3 install numpy regex python-Levenshtein colorama
+                sudo pip3 install tensorflow==1.4.0
 
                 ## chatbot: download + unzip
-                wget https://www.dropbox.com/s/p1say7bqpn8gfmt/#{dropbox_project}.zip
-                unzip #{dropbox_project}.zip && rm #{dropbox_project}.zip
-                cp app/inference #{dropbox_project}/
+                wget "https://www.dropbox.com/s/p1say7bqpn8gfmt/#{dropbox_project}.zip" -O "#{project_root}/#{dropbox_project}.zip"
+                unzip "#{project_root}/#{dropbox_project}.zip"
+                rm "#{project_root}/#{dropbox_project}.zip"
+                cp -f "#{project_root}/app/inference.py" "#{project_root}/#{dropbox_project}/inference.py"
 
             SHELL
             node.vm.network 'private_network', ip: machine[:ip]
