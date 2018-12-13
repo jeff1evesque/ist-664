@@ -293,7 +293,6 @@ def interactive(question):
 
     # Interactive mode
     colorama.init()
-    print("\n\nStarting interactive mode (first response will take a while):")
 
     # Specified model
     if len(sys.argv) >= 2 and sys.argv[1]:

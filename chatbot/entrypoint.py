@@ -11,6 +11,7 @@ from nltk.corpus import treebank
 from nmt_chatbot.inference import interactive
 
 original_cwd = os.getcwd()
+print("\n\nStarting interactive mode (first response will take a while):")
 
 # QAs
 while True:
