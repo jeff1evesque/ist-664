@@ -26,6 +26,8 @@ while True:
     sent = word_tokenize(question)
     tagged_words = tag.pos_tag(sent)
     pos = [x[1] for x in pos if x[1] and x[1] in penn_scale]
+    prediction = rf.predict(pos)
+    print(prediction)
 
     # generate response
     inference_internal = interactive(question)
