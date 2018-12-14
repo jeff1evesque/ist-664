@@ -278,8 +278,7 @@ def process_questions(questions, return_score_modifiers = False):
     return prepared_answers_list
 
 # interactive mode
-if __name__ == "__main__":
-
+def interactive(question):
     # Input file
     if sys.stdin.isatty() == False:
 
@@ -294,7 +293,6 @@ if __name__ == "__main__":
 
     # Interactive mode
     colorama.init()
-    print("\n\nStarting interactive mode (first response will take a while):")
 
     # Specified model
     if len(sys.argv) >= 2 and sys.argv[1]:
@@ -302,12 +300,4 @@ if __name__ == "__main__":
         hparams['ckpt'] = checkpoint
         print("Using checkpoint: {}".format(checkpoint))
 
-    # QAs
-    while True:
-        question = input("\n> ")
-        answers = inference_internal(question)[0]
-        if answers is None:
-            print(colorama.Fore.RED + "! Question can't be empty" + colorama.Fore.RESET)
-        else:
-            print('{response}'.format(answers['answers']
-os.chdir(original_cwd)
+    return(inference_internal)
