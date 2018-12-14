@@ -2,7 +2,7 @@
 
 '''
 
-upload.py, upload specified data to mongodb endpoint.
+entrypoint.py, apply chatbot.
 
 '''
 
