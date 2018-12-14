@@ -2,7 +2,7 @@
 
 '''
 
-entrypoint.py, apply chatbot.
+run.py, apply chatbot.
 
 '''
 
