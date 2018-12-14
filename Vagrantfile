@@ -52,13 +52,13 @@ Vagrant.configure(2) do |config|
                 echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
                 sudo apt-get update -y
                 sudo apt-get install -y mongodb-org python3-pip dos2unix unzip
-                sudo pip3 install pymongo nltk
+                sudo pip3 install pymongo
 
                 ## start mongodb
                 sudo service mongod start
 
                 ## chatbot dependencies
-                sudo pip3 install numpy regex python-Levenshtein colorama
+                sudo pip3 install nltk numpy regex python-Levenshtein colorama scikit-learn
                 sudo pip3 install tensorflow==1.4.0
                 python3 -m nltk.downloader punkt averaged_perceptron_tagger
 
