@@ -3,6 +3,7 @@ config.py
 **/*.swp
 chatbot/nmt_chatbot.zip
 ubuntu-xenial-16.04-cloudimg-console.log
+**/*.ipynb_checkpoints
 
 # ignore directories
 **/__pycache__
