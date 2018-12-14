@@ -9,6 +9,10 @@ entrypoint.py, apply chatbot.
 import os
 from nltk import tag, word_tokenize
 from nmt_chatbot.inference import interactive
+from sklearn.externals import joblib
+
+## import previously trained models
+rf = joblib.load('QuestionAnswerCMU/model/random_forrest.pkl')
 
 original_cwd = os.getcwd()
 print("\n\nStarting interactive mode (first response will take a while):")
