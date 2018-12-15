@@ -63,10 +63,10 @@ Vagrant.configure(2) do |config|
                 python3 -m nltk.downloader punkt averaged_perceptron_tagger
 
                 ## chatbot: download + unzip
-                wget "https://www.dropbox.com/s/p1say7bqpn8gfmt/#{dropbox_project}.zip" -O "#{project_root}/#{dropbox_project}.zip"
-                unzip "#{project_root}/#{dropbox_project}.zip" -d "#{project_root}"
-                rm "#{project_root}/#{dropbox_project}.zip"
-                cp -f "#{project_root}/app/inference.py" "#{project_root}/#{dropbox_project}/inference.py"
+                wget "https://www.dropbox.com/s/p1say7bqpn8gfmt/#{dropbox_project}.zip" -O "#{project_root}/chatbot/#{dropbox_project}.zip"
+                unzip -n "#{project_root}/chatbot/#{dropbox_project}.zip" -d "#{project_root}/chatbot"
+                rm "#{project_root}/chatbot/#{dropbox_project}.zip"
+                cp -f "#{project_root}/chatbot/app/inference.py" "#{project_root}/chatbot/#{dropbox_project}/inference.py"
 
             SHELL
             node.vm.network 'private_network', ip: machine[:ip]
