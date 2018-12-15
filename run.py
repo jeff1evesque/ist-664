@@ -8,7 +8,7 @@ run.py, apply chatbot.
 
 import os
 from nltk import tag, word_tokenize
-from nmt_chatbot.inference import interactive
+from chatbot.nmt_chatbot.inference import interactive
 from sklearn.externals import joblib
 
 ## import previously trained models
