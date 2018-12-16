@@ -58,7 +58,7 @@ Vagrant.configure(2) do |config|
                 sudo service mongod start
 
                 ## chatbot dependencies
-                sudo pip3 install nltk numpy regex python-Levenshtein colorama scikit-learn
+                sudo pip3 install nltk numpy regex python-Levenshtein colorama scikit-learn pandas
                 sudo pip3 install tensorflow==1.4.0
                 python3 -m nltk.downloader punkt averaged_perceptron_tagger
 
