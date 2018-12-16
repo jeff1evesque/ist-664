@@ -117,7 +117,6 @@ def tokenizer(sentence):
     '''
 
     pos_scale = penn_scale()
-    pos_scale = penn_scale()
     sent = word_tokenize(sentence)
     pos = tag.pos_tag(sent)
     return([x[1] for x in pos if x[1] and x[1] in pos_scale])
