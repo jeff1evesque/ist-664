@@ -7,14 +7,21 @@ run.py, apply chatbot.
 '''
 
 import os
+cwd = os.getcwd()
+
 from nltk import tag, word_tokenize
 from chatbot.nmt_chatbot.inference import interactive
 from sklearn.externals import joblib
+from QuestionAnswerCMU.utility import tokenizer
+import pickle
 
 ## import previously trained models
-rf = joblib.load('QuestionAnswerCMU/model/random_forrest.pkl')
+with open(
+    '{cwd}/QuestionAnswerCMU/model/random_forest.pkl'.format(cwd=cwd),
+    'rb'
+) as fp:
+    clf_rf = pickle.load(fp)
 
-original_cwd = os.getcwd()
 print("\n\nStarting interactive mode (first response will take a while):")
 
 # QAs
@@ -22,10 +29,13 @@ while True:
     # prompt input
     question = input('\n> ')
 
-    # penn-tree: tokenize + parts of speech
-    sent = word_tokenize(question)
-    tagged_words = tag.pos_tag(sent)
-    pos = [x[1] for x in pos if x[1] and x[1] in penn_scale]
+    # tokenize + parts of speech
+    pos = tokenizer(question)
+
+    # normalize question
+    X_question = normalize_data(pos, stop_gap=40)
+
+    print(clf.predict(X_question))
 
     # generate response
     inference_internal = interactive(question)
@@ -37,4 +47,4 @@ while True:
     else:
         print('{response}'.format(response=answers['answers'][answers['best_index']]))
 
-os.chdir(original_cwd)
+os.chdir(cwd)
