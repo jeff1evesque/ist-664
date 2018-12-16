@@ -59,53 +59,37 @@ def penn_scale():
         'WRB': 36
     }
 
-def normalize_data(X_train, X_test, stop_gap=40, stop_value=0):
+def normalize_data(X_data, stop_gap=40, stop_value=0):
     '''
 
     Ensure each sentence has exactly 'stop_gap' number of columns.
 
     '''
 
-    ## train: ensure nested lists same length
-    length = len(sorted(X_train, key=len, reverse=True)[0])
-    X_train=np.array([xi+[stop_gap]*(length-len(xi)) for xi in X_train])
-    X_train=pd.DataFrame(X_train)
-
-    ## test: ensure nested lists same length
-    length = len(sorted(X_test, key=len, reverse=True)[0])
-    X_test=np.array([xi+[stop_gap]*(length-len(xi)) for xi in X_test])
-    X_test=pd.DataFrame(X_test)
+    ## ensure nested lists same length
+    length = len(sorted(X_data, key=len, reverse=True)[0])
+    X_data=np.array([xi+[stop_gap]*(length-len(xi)) for xi in X_data])
+    X_data=pd.DataFrame(X_data)
 
     ## get shape of dataframe
-    rows_train, columns_train = X_train.shape
-    rows_test, columns_test = X_test.shape
-
-    train_delta = stop_gap - columns_train
-    test_delta = stop_gap - columns_test
+    rows_train, columns_train = X_data.shape
+    delta = stop_gap - columns_train
 
     ##
     ## columns fixed to 40:
     ##
     ## https://github.com/jeff1evesque/ist-664/issues/62#issuecomment-447223456
     ##
-    if train_delta > 0 and train_delta <= stop_gap:
-        for i in range(train_delta):
-            X_train['filler-{}'.format(i)] = stop_value
+    if delta > 0 and delta <= stop_gap:
+        for i in range(delta):
+            X_data['filler-{}'.format(i)] = stop_value
 
-    if test_delta > 0 and test_delta <= stop_gap:
-        for i in range(test_delta):
-            X_test['filler-{}'.format(i)] = stop_value
-
-    if train_delta < 0:
-        rem_list = [x for x in range(abs(columns_train))][:train_delta]
-        X_train = X_train.iloc[:,rem_list]
-
-    if test_delta < 0:
-        rem_list = [x for x in range(abs(columns_test))][:test_delta]
-        X_test = X_test.iloc[:,rem_list]
+    if delta < 0:
+        rem_list = [x for x in range(abs(columns_train))][:delta]
+        X_data = X_data.iloc[:,rem_list]
 
     ## return train + test
-    return(X_train, X_test)
+    return(X_data)
 
 def tokenizer(sentence):
     '''
