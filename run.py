@@ -45,7 +45,7 @@ while True:
     prediction = clf_rf.predict([X_sentence])
 
     # generate response
-    if prediction == '1':
+    if prediction == '0':
         inference_internal = interactive(sentence)
         answers = inference_internal(sentence)[0]
 
