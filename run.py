@@ -12,7 +12,7 @@ cwd = os.getcwd()
 from nltk import tag, word_tokenize
 from chatbot.nmt_chatbot.inference import interactive
 from sklearn.externals import joblib
-from QuestionAnswerCMU.utility import tokenizer, normalize_data
+from QuestionAnswerCMU.utility import tokenizer, normalize_data, replace, penn_scale
 import pickle
 
 ## import previously trained models
@@ -23,25 +23,29 @@ print("\n\nStarting interactive mode (first response will take a while):")
 # QAs
 while True:
     # prompt input
-    question = input('\n> ')
+    sentence = input('\n> ')
 
     # tokenize + parts of speech
-    pos = tokenizer(question)
+    pos = tokenizer(sentence)
+
+    # convert pos to numeric
+    sentence_pos = [penn_scale().get(item,item) for item in pos]
 
     # normalize question
-    X_question = normalize_data(pos, stop_gap=40)
-    print(X_question)
+    X_sentence = normalize_data(sentence_pos, stop_gap=40)
 
-    print(clf_rf.predict(X_question))
+    # check if question
+    prediction = clf_rf.predict([X_sentence])
 
     # generate response
-    inference_internal = interactive(question)
-    answers = inference_internal(question)[0]
+    if prediction == '1':
+        inference_internal = interactive(sentence)
+        answers = inference_internal(sentence)[0]
 
-    # display response
-    if answers is None:
-        print(colorama.Fore.RED + "! Question can't be empty" + colorama.Fore.RESET)
-    else:
-        print('{response}'.format(response=answers['answers'][answers['best_index']]))
+        # display response
+        if answers is None:
+            print(colorama.Fore.RED + "! Question can't be empty" + colorama.Fore.RESET)
+        else:
+            print('{response}'.format(response=answers['answers'][answers['best_index']]))
 
 os.chdir(cwd)
