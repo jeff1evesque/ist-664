@@ -1,7 +1,7 @@
 # ignore files
 config.py
 **/*.swp
-chatbot/nmt_chatbot.zip
+**/nmt_chatbot.zip
 ubuntu-xenial-16.04-cloudimg-console.log
 **/*.ipynb_checkpoints
 
