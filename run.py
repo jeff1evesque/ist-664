@@ -12,15 +12,11 @@ cwd = os.getcwd()
 from nltk import tag, word_tokenize
 from chatbot.nmt_chatbot.inference import interactive
 from sklearn.externals import joblib
-from QuestionAnswerCMU.utility import tokenizer
+from QuestionAnswerCMU.utility import tokenizer, normalize_data
 import pickle
 
 ## import previously trained models
-with open(
-    '{cwd}/QuestionAnswerCMU/model/random_forest.pkl'.format(cwd=cwd),
-    'rb'
-) as fp:
-    clf_rf = pickle.load(fp)
+clf_rf = joblib.load('{base}/QuestionAnswerCMU/model/random_forest.pkl'.format(base=cwd))
 
 print("\n\nStarting interactive mode (first response will take a while):")
 
@@ -34,8 +30,9 @@ while True:
 
     # normalize question
     X_question = normalize_data(pos, stop_gap=40)
+    print(X_question)
 
-    print(clf.predict(X_question))
+    print(clf_rf.predict(X_question))
 
     # generate response
     inference_internal = interactive(question)
