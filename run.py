@@ -12,7 +12,12 @@ cwd = os.getcwd()
 from nltk import tag, word_tokenize
 from chatbot.nmt_chatbot.inference import interactive
 from sklearn.externals import joblib
-from QuestionAnswerCMU.utility import tokenizer, normalize_data, replace, penn_scale
+from QuestionAnswerCMU.utility import (
+    tokenizer,
+    normalize_data,
+    replace,
+    penn_scale
+)
 import pickle
 
 ## import previously trained models
@@ -29,7 +34,7 @@ while True:
     pos = tokenizer(sentence)
 
     # convert pos to numeric
-    sentence_pos = [penn_scale().get(item,item) for item in pos]
+    sentence_pos = replace(pos, penn_scale())
 
     # normalize question
     X_sentence = normalize_data(sentence_pos, stop_gap=40)
