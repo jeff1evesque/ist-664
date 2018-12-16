@@ -59,34 +59,52 @@ def penn_scale():
         'WRB': 36
     }
 
-def normalize_data(X_data, stop_gap=40, stop_value=0):
+def normalize_data(X_data, stop_gap=40, stop_value=0, train=False):
     '''
 
     Ensure each sentence has exactly 'stop_gap' number of columns.
 
     '''
 
-    ## ensure nested lists same length
-    length = len(sorted(X_data, key=len, reverse=True)[0])
-    X_data=np.array([xi+[stop_gap]*(length-len(xi)) for xi in X_data])
-    X_data=pd.DataFrame(X_data)
+    if train:
+        ## ensure nested lists same length
+        length = len(sorted(X_data, key=len, reverse=True)[0])
+        X_data=np.array([xi+[stop_gap]*(length-len(xi)) for xi in X_data])
+        X_data=pd.DataFrame(X_data)
 
-    ## get shape of dataframe
-    rows_train, columns_train = X_data.shape
-    delta = stop_gap - columns_train
+        ## get shape of dataframe
+        rows_train, columns_train = X_data.shape
+        delta = stop_gap - columns_train
 
-    ##
-    ## columns fixed to 40:
-    ##
-    ## https://github.com/jeff1evesque/ist-664/issues/62#issuecomment-447223456
-    ##
-    if delta > 0 and delta <= stop_gap:
-        for i in range(delta):
-            X_data['filler-{}'.format(i)] = stop_value
+        ##
+        ## columns fixed to 40:
+        ##
+        ## https://github.com/jeff1evesque/ist-664/issues/62#issuecomment-447223456
+        ##
+        if delta > 0 and delta <= stop_gap:
+            for i in range(delta):
+                X_data['filler-{}'.format(i)] = stop_value
 
-    if delta < 0:
-        rem_list = [x for x in range(abs(columns_train))][:delta]
-        X_data = X_data.iloc[:,rem_list]
+        if delta < 0:
+            rem_list = [x for x in range(abs(columns_train))][:delta]
+            X_data = X_data.iloc[:,rem_list]
+
+    else:
+        columns_train = len(X_data)
+        delta = stop_gap - columns_train
+
+        ##
+        ## columns fixed to 40:
+        ##
+        ## https://github.com/jeff1evesque/ist-664/issues/62#issuecomment-447223456
+        ##
+        if delta > 0 and delta <= stop_gap:
+            for i in range(delta):
+                X_data.append(stop_value)
+
+        if delta < 0:
+            rem_list = [x for x in range(abs(columns_train))][:delta]
+            X_data = X_data[:len(X_data) - rem_list]
 
     ## return train + test
     return(X_data)
