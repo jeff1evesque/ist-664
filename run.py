@@ -9,7 +9,8 @@ run.py, apply chatbot.
 import os
 cwd = os.getcwd()
 
-from nltk import tag, word_tokenize
+# tokenize is required by the 'clf_bu' model
+from nltk import tag, word_tokenize, tokenize
 from chatbot.nmt_chatbot.inference import interactive
 from sklearn.externals import joblib
 from QuestionAnswerCMU.utility import (
@@ -22,6 +23,7 @@ import pickle
 
 ## import previously trained models
 clf_rf = joblib.load('{base}/QuestionAnswerCMU/model/random_forest.pkl'.format(base=cwd))
+clf_bu = joblib.load('{base}/StackOverflow/SO_RF_Model.pkl'.format(base=cwd))
 
 print("\n\nStarting interactive mode (first response will take a while):")
 
