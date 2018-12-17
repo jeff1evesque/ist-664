@@ -33,7 +33,6 @@ import pickle
 import sys
 
 
-# build local model
 def main(type='generic'):
     if type == 'insert':
         client = MongoClient(mongos_endpoint)
@@ -44,6 +43,7 @@ def main(type='generic'):
             '{base}/chatbot/{subdir}'.format(base=cwd, subdir=data_directory)
         )
     elif type == 'local':
+        client = MongoClient(mongos_endpoint)
         data = select(client, database, collection)
     elif type == 'generic':
         # import previously trained models
