@@ -33,8 +33,8 @@ import pickle
 import sys
 
 
-def main(type='generic'):
-    if type == 'insert':
+def main(op='generic'):
+    if op == 'insert':
         client = MongoClient(mongos_endpoint)
         insert(
             client,
@@ -42,10 +42,27 @@ def main(type='generic'):
             collection,
             '{base}/chatbot/{subdir}'.format(base=cwd, subdir=data_directory)
         )
-    elif type == 'local':
+
+    elif op == 'local':
         client = MongoClient(mongos_endpoint)
-        data = select(client, database, collection)
-    elif type == 'generic':
+        results = select(client, database, collection)
+
+        # combine sequence pairs
+        combined = {}
+        for doc in results.find():
+            if doc['value']:
+                for k, v in doc['value'].items():
+                    if k in combined.keys():
+                        combined[k] += v
+                    else:
+                        combined[k] = v
+
+        posts = combined['posts']
+        replies = combined['replies']
+        scores = combined['comments']
+        model = train(posts, replies)
+
+    elif op == 'generic':
         # import previously trained models
         clf_rf = joblib.load('{base}/QuestionAnswerCMU/model/random_forest.pkl'.format(base=cwd))
 
@@ -80,10 +97,10 @@ def main(type='generic'):
 
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == '--insert':
-        main(type='insert')
+        main(op='insert')
 
     elif len(sys.argv) > 1 and sys.argv[1] == '--local':
-        main(type='local')
+        main(op='local')
 
     else:
-        main(type='generic')
+        main(op='generic')
