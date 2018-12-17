@@ -48,7 +48,6 @@ def main(type='generic'):
     elif type == 'generic':
         # import previously trained models
         clf_rf = joblib.load('{base}/QuestionAnswerCMU/model/random_forest.pkl'.format(base=cwd))
-        clf_bu = joblib.load('{base}/StackOverflow/SO_RF_Model.pkl'.format(base=cwd))
 
         while True:
             # prompt input
@@ -80,11 +79,11 @@ def main(type='generic'):
     os.chdir(cwd)
 
 if __name__ == '__main__':
-    if sys.argv[1] and sys.argv[1] == '--insert':
+    if len(sys.argv) > 1 and sys.argv[1] == '--insert':
         main(type='insert')
 
-    elif sys.argv[1] and sys.argv[1] == '--local':
+    elif len(sys.argv) > 1 and sys.argv[1] == '--local':
         main(type='local')
 
-    elif sys.argv[1] and sys.argv[1] == '--build':
-        main(type='build')
+    else:
+        main(type='generic')
