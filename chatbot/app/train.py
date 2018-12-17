@@ -2,7 +2,7 @@
 
 '''
 
-select.py, select specified data from mongodb endpoint.
+train.py, select specified data from mongodb endpoint, and train
 
 '''
 
