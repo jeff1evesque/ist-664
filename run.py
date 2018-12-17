@@ -58,9 +58,9 @@ def main(op='generic'):
                         combined[k] = v
 
         posts = combined['posts']
-        replies = combined['replies']
-        scores = combined['comments']
-        model = train(posts, replies)
+        comments = combined['comments']
+        scores = combined['scores']
+        model = train(posts, comments)
 
     elif op == 'generic':
         # import previously trained models
