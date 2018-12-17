@@ -25,9 +25,11 @@ from QuestionAnswerCMU.utility import (
 )
 from StackOverflow.utility import tokenize, so_model
 
-print("\n\nStarting interactive mode (first response will take a while):")
+# local variables
+client='jimmy'
 
-# QAs
+# interative session
+print("\n\nStarting interactive mode (first response will take a while):")
 while True:
     # prompt input
     sentence = input('\n> ')
@@ -52,7 +54,7 @@ while True:
         # display response
         if answers is None:
             print(colorama.Fore.RED + "! Question can't be empty" + colorama.Fore.RESET)
-        elif answers['best_score'] < 20:
+        elif answers['best_score'] < 15:
             print('hey {name}, maybe checkout {url}'.format(
                 name=client,
                 url=so_model(cwd).predict([sentence])
