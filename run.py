@@ -54,7 +54,7 @@ while True:
         # display response
         if answers is None:
             print(colorama.Fore.RED + "! Question can't be empty" + colorama.Fore.RESET)
-        elif answers['best_score'] < 20:
+        elif answers['best_score'] < 12:
             print('hey {name}, maybe checkout {url}'.format(
                 name=client,
                 url=so_model(cwd).predict([sentence])
