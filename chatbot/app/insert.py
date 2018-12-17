@@ -11,7 +11,11 @@ from os import listdir
 from os.path import isfile, join
 
 
-def insert(client, db, col, data_directory='data'):
+def insert(client, database, collection, data_directory='data'):
+    # database + collection
+    db = client[database]
+    col = db[collection]
+
     # insert data
     data = []
     for f in listdir(data_directory):
