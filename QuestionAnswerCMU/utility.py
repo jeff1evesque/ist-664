@@ -8,6 +8,7 @@ utility.py, helper function.
 
 import numpy as np
 import pandas as pd
+import joblib
 from nltk import word_tokenize, tag
 
 
@@ -129,3 +130,12 @@ def replace(list, dictionary):
     '''
 
     return [dictionary.get(item, item) for item in list]
+
+def qa_model(cwd):
+    '''
+
+    return unserialized model.
+
+    '''
+
+    return joblib.load('{base}/QuestionAnswerCMU/model/random_forest.pkl'.format(base=cwd))
