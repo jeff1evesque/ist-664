@@ -11,19 +11,19 @@ cwd = os.getcwd()
 
 # tokenize is required by the 'clf_bu' model
 from nltk import tag, word_tokenize, tokenize
+from nltk.tokenize import TreebankWordTokenizer, RegexpTokenizer
+
+# general requirements
+import joblib
 from chatbot.nmt_chatbot.inference import interactive
-from sklearn.externals import joblib
 from QuestionAnswerCMU.utility import (
     tokenizer,
     normalize_data,
     replace,
-    penn_scale
+    penn_scale,
+    qa_model
 )
-import pickle
-
-## import previously trained models
-clf_rf = joblib.load('{base}/QuestionAnswerCMU/model/random_forest.pkl'.format(base=cwd))
-clf_bu = joblib.load('{base}/StackOverflow/SO_RF_Model.pkl'.format(base=cwd))
+from StackOverflow.utility import tokenize, so_model
 
 print("\n\nStarting interactive mode (first response will take a while):")
 
@@ -42,7 +42,7 @@ while True:
     X_sentence = normalize_data(sentence_pos, stop_gap=40)
 
     # check if question
-    prediction = clf_rf.predict([X_sentence])
+    prediction = qa_model(cwd).predict([X_sentence])
 
     # generate response
     if prediction == '0':
@@ -52,6 +52,11 @@ while True:
         # display response
         if answers is None:
             print(colorama.Fore.RED + "! Question can't be empty" + colorama.Fore.RESET)
+        elif answers['best_score'] < 20:
+            print('hey {name}, maybe checkout {url}'.format(
+                name=client,
+                url=so_model(cwd).predict([sentence])
+            ))
         else:
             print('{response}'.format(response=answers['answers'][answers['best_index']]))
 
