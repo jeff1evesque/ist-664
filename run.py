@@ -37,7 +37,7 @@ from QuestionAnswerCMU.utility import (
 from StackOverflow.utility import tokenize, so_model
 
 # local variables
-client='jimmy'
+username='jimmy'
 
 def main(op='generic'):
     '''
@@ -104,7 +104,7 @@ def main(op='generic'):
 
             elif answers['best_score'] < 12:
                 print('hey {name}, maybe checkout {url}'.format(
-                    name=client,
+                    name=username,
                     url=so_model(cwd).predict([sentence])
                 ))
 
