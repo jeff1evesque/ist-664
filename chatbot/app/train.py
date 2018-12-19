@@ -13,7 +13,6 @@ import tensorflow as tf
 from keras.models import Model, save_model
 from keras.layers import Input, LSTM, Dense
 from os import path, makedirs
-from keras.models import model_from_json
 from datetime import datetime
 
 
