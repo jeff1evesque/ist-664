@@ -72,7 +72,7 @@ def main(op='generic'):
         posts = combined['posts']
         comments = combined['comments']
         scores = combined['scores']
-        model = train(posts, comments)
+        model = train(posts, comments, cwd=cwd)
 
     elif op == 'generic':
         # interative session
