@@ -20,7 +20,7 @@ from datetime import datetime
 def train(
     posts,
     comments,
-    cwd='/vagrant',
+    cwd,
     epochs=1,
     batch_size=64,
     split=0.2,
