@@ -14,14 +14,22 @@ from keras.models import Model, save_model
 from keras.layers import Input, LSTM, Dense
 from os import path, makedirs
 from keras.models import model_from_json
+from datetime import datetime
 
 
-def train(posts, comments, cwd):
+def train(
+    posts,
+    comments,
+    cwd='/vagrant',
+    epochs=1,
+    batch_size=64,
+    split=0.2,
+    checkpoint_period=1
+):
     #
     # local variables
     #
-    # Note: ideally the the posts, comments, and nb_samples should be the
-    #       same length.
+    # Note: the posts, comments, and nb_samples should be the same length.
     #
     post_chars = set()
     comment_chars = set()
@@ -104,34 +112,35 @@ def train(posts, comments, cwd):
     decoder_out = decoder_dense (decoder_out)
 
     # checkpoint callback
-    checkpoint_path = '{base}/model/cp-{epoch:04d}.ckpt'.format(base=cwd)
-    checkpoint_dir = os.path.dirname(checkpoint_path)
+    checkpoint = '{base}/model/cp--{date}.ckpt'.format(base=cwd, date=datetime.now())
+    checkpoint_dir = os.path.dirname(checkpoint)
     cp_callback = tf.keras.callbacks.ModelCheckpoint(
-        checkpoint_path, 
+        checkpoint_dir,
         save_weights_only=True,
+        period=checkpoint_period,
         verbose=1
     )
 
     # generate model
-    model = Model(inputs=[encoder_input, decoder_input],outputs=[decoder_out])
+    model = Model(inputs=[encoder_input, decoder_input], outputs=[decoder_out])
     model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
     model.fit(
         x=[tokenized_posts, tokenized_comments], 
         y=target_data,
-        batch_size=64,
-        epochs=1,
-        validation_split=0.2,
-        callbacks = [cp_callback]
+        batch_size=batch_size,
+        epochs=epochs,
+        validation_split=split,
+#        callbacks = [cp_callback]
     )
 
     # model directory
     if not path.exists('{base}/model'.format(base=cwd)):
         makedirs('{base}/model'.format(base=cwd))
 
-    # serialize model to JSON
+    # save model
     save_model(
         model,
-        '/vagrant/model.h5',
+        '{base}/model/chatbot.h5'.format(base=cwd),
         overwrite=True,
         include_optimizer=True
     )
