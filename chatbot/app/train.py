@@ -24,12 +24,13 @@ def train(
     epochs=1,
     batch_size=64,
     split=0.2,
+    checkpoint=None,
     checkpoint_period=1
 ):
     #
     # local variables
     #
-    # Note: the posts, comments, and nb_samples should be the same length.
+    # Note: posts, comments, and nb_samples should be the same length.
     #
     post_chars = set()
     comment_chars = set()
@@ -112,14 +113,17 @@ def train(
     decoder_out = decoder_dense (decoder_out)
 
     # checkpoint callback
-    checkpoint = '{base}/model/cp--{date}.ckpt'.format(base=cwd, date=datetime.now())
-    checkpoint_dir = os.path.dirname(checkpoint)
-    cp_callback = tf.keras.callbacks.ModelCheckpoint(
-        checkpoint_dir,
-        save_weights_only=True,
-        period=checkpoint_period,
-        verbose=1
-    )
+    if checkpoint:
+        cp = '{base}/model/cp--{date}.ckpt'.format(base=cwd, date=datetime.now())
+        cp_dir = os.path.dirname(cp)
+        cp_callback = [tf.keras.callbacks.ModelCheckpoint(
+            cp_dir,
+            save_weights_only=True,
+            period=checkpoint_period,
+            verbose=1
+        )]
+    else:
+        cp_callback = False
 
     # generate model
     model = Model(inputs=[encoder_input, decoder_input], outputs=[decoder_out])
@@ -130,7 +134,7 @@ def train(
         batch_size=batch_size,
         epochs=epochs,
         validation_split=split,
-#        callbacks = [cp_callback]
+        callbacks = cp_callback
     )
 
     # model directory
