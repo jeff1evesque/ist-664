@@ -2,133 +2,134 @@
 
 '''
 
-train.py, select specified data from mongodb endpoint, and train
+train.py, train LSTM model
 
 '''
 
+import joblib
+import numpy as np
+from keras.models import Model, save_model
+from keras.layers import Input, LSTM, Dense
+from os import path, makedirs
+from keras.models import model_from_json
 
-from bson.code import Code
 
-def select(client, database, collection):
-    # database + collection
-    db = client[database]
-    col = db[collection]
-
-    # emit the 'values' to the reduce
-    map = Code('''
-        function() {
-          if (
-            this.body != 'repost' &&
-            this.body != '[deleted]' &&
-            this.body != '[removed]'
-          ) {
-            emit(
-              this.link_id,
-              {
-                'id': [this.id],
-                'score': [this.score],
-                'parent_id': [this.parent_id],
-                'body': [this.body],
-                'comment': [this.body]
-              }
-            );
-          }
-        }
-    ''')
-
+def train(posts, comments, cwd):
     #
-    # @to (key), the parent post
-    # @from (value), reply to parent posts
+    # local variables
     #
-    reduce = Code('''
-        function (key, values) {
-          const singleton = ['.', '-', '$', ',', ':', '%', "'"]
-          const regexParts = [
-              /\s+/,
-              /\]|\[|\(|\)/,
-              /-&gt;|&gt;|&lt;/,
-              /\$?[0-9]{6,}/,
-              /https?:\/\/|https?;\/\//,
-              /((?:www\.|(?!www)|[a-zA-Z]+\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,})/,
-              /((?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/,
-              /[^\x01-\x7F]+/,
-              /--|\*|\.\.\.|"|:-|:|!!!|\?\?\?|\+|=|\/\/|;/,
-              /\s(\.-\$,:%')\s/
-          ],
-          regexString  = regexParts.map(function(x){return x.source}).join('|'),
-          tokenRegex = new RegExp(regexString, 'g');
+    # Note: ideally the the posts, comments, and nb_samples should be the
+    #       same length.
+    #
+    post_chars = set()
+    comment_chars = set()
+    post_lookup_index = {}
+    post_lookup_char = {}
+    comment_lookup_char = {}
+    comment_lookup_index = {}
+    nb_samples = int(len(posts) / 1000)
 
-          var results = { posts: [], comments: [], match_id: [], score: [] };
-          for (var i = 0; i < values.length; i++) {
-            if (
-              values[i] &&
-              values[i].body &&
-              values[i].parent_id &&
-              ! singleton.includes(values[i].body)
-            ) {
-              var comment = values[i].body;
-              var score = values[i].score;
-              var wantedParent = values[i].parent_id[0].split('_')[1];
-              for (var j = 0; j < values.length; j++) {
-                if (
-                    values[j] &&
-                    values[j].body &&
-                    values[j].body != values[i].body &&
-                    wantedParent == values[j].id &&
-                    ! singleton.includes(values[j].body)
-                ) {
-                  //
-                  // posts + comments: collapse all whitespace to single
-                  //     whitespace, remove bracket and parentheses, then
-                  //     append tokenized sentence.
-                  //
-                  results.posts = results.posts.concat([
-                    values[j].body[0].replace(tokenRegex, ' ').trim()
-                  ]);
-                  results.comments = results.comments.concat([
-                    comment[0].replace(tokenRegex, ' ').trim()
-                  ]);
-                  results.match_id = results.match_id.concat(wantedParent);
-                  results.score = results.score.concat(score);
-                }
-              }
-            }
-          }
+    # split sentences by chararacters
+    for line in range(nb_samples):
+	    #
+	    # <sent>, start of the sentence
+        # </sent>, end of the sentence
+	    #
+        post_line = posts[line]
+        comment_line = '<sent>' + comments[line] + '</sent>'
 
-          if (
-            results.posts.length > 0 &&
-            results.comments.length > 0 &&
-            results.match_id.length > 0 &&
-            results.score.length > 0
-          ) {
-            return { results };
-          }
-        }
-    ''')
+        for char in post_line:
+            if (char not in post_chars):
+                post_chars.add(char)
 
-    # finalize: remove single case (reducer skipped)
-    finalize = Code('''
-        function finalize(key, values) {
-          if (
-            values &&
-            values.results &&
-            values.results.posts &&
-            values.results.posts[0] &&
-            values.results.comments &&
-            values.results.comments[0] &&
-            values.results.posts[0].length > 0 &&
-            values.results.comments[0].length > 0 &&
-            values.results.posts[0] != values.results.comments[0]
-          ) {
-            return values.results;
-          }
-        }
-    ''')
+        for char in comment_line:
+            if (char not in comment_chars):
+                comment_chars.add(char)
 
-    # select data
-    return col.map_reduce(
-        map=map,
-        reduce=reduce,
-        finalize=finalize,
-        out='to_from'
+    comment_chars = sorted(list(comment_chars))
+    post_chars = sorted(list(post_chars))
+
+    for k, v in enumerate(post_chars):
+        post_lookup_index[k] = v
+        post_lookup_char[v] = k
+
+    for k, v in enumerate(comment_chars):
+        comment_lookup_char[k] = v
+        comment_lookup_index[v] = k
+
+    max_len_posts = max([len(line) for line in posts])
+    max_len_comments = max([len(line) for line in comments])
+
+    tokenized_posts = np.zeros(shape=(
+        nb_samples,
+        max_len_posts,
+        len(post_chars)
+    ), dtype='float32')
+    tokenized_comments = np.zeros(shape=(
+        nb_samples,
+        max_len_comments,
+        len(comment_chars)
+    ), dtype='float32')
+    target_data = np.zeros((
+        nb_samples,
+        max_len_comments,
+        len(comment_chars)
+    ),dtype='float32')
+
+    # vectorize post and comments
+    for i in range(nb_samples):
+        for k, char in enumerate(posts[i]):
+            tokenized_posts[i, k, post_lookup_char[char]] = 1
+
+        for k, char in enumerate(comments[i]):
+            tokenized_comments[i, k, comment_lookup_index[char]] = 1
+
+            # decoder_target_data will be ahead by one timestep and will not include the start chararacter.
+            if k > 0:
+                target_data[i, k-1, comment_lookup_index[char]] = 1
+
+    # encoder
+    encoder_input = Input(shape=(None, len(post_chars)))
+    encoder_LSTM = LSTM(256, return_state = True)
+    encoder_outputs, encoder_h, encoder_c = encoder_LSTM (encoder_input)
+    encoder_states = [encoder_h, encoder_c]
+
+    # decoder
+    decoder_input = Input(shape=(None, len(comment_chars)))
+    decoder_LSTM = LSTM(256, return_sequences=True, return_state = True)
+    decoder_out, _ , _ = decoder_LSTM(decoder_input, initial_state=encoder_states)
+    decoder_dense = Dense(len(comment_chars), activation='softmax')
+    decoder_out = decoder_dense (decoder_out)
+
+    # checkpoint callback
+    checkpoint_path = '{base}/model/cp.ckpt'.format(base=cwd)
+    checkpoint_dir = os.path.dirname(checkpoint_path)
+    cp_callback = tf.keras.callbacks.ModelCheckpoint(
+        checkpoint_path, 
+        save_weights_only=True,
+        verbose=1
+    )
+
+    # generate model
+    model = Model(inputs=[encoder_input, decoder_input],outputs=[decoder_out])
+    model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
+    model.fit(
+        x=[tokenized_posts, tokenized_comments], 
+        y=target_data,
+        batch_size=64,
+        epochs=1,
+        validation_split=0.2,
+        callbacks = [cp_callback]
+    )
+
+    # model directory
+    if not path.exists('{base}/model'.format(base=cwd)):
+        makedirs('{base}/model'.format(base=cwd))
+
+    # serialize model to JSON
+    save_model(
+        model,
+        '/vagrant/model.h5',
+        overwrite=True,
+        include_optimizer=True
     )
