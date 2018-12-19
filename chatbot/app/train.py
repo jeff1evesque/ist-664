@@ -6,8 +6,10 @@ train.py, train LSTM model
 
 '''
 
+import os
 import joblib
 import numpy as np
+import tensorflow as tf
 from keras.models import Model, save_model
 from keras.layers import Input, LSTM, Dense
 from os import path, makedirs
@@ -102,7 +104,7 @@ def train(posts, comments, cwd):
     decoder_out = decoder_dense (decoder_out)
 
     # checkpoint callback
-    checkpoint_path = '{base}/model/cp.ckpt'.format(base=cwd)
+    checkpoint_path = '{base}/model/cp-{epoch:04d}.ckpt'.format(base=cwd)
     checkpoint_dir = os.path.dirname(checkpoint_path)
     cp_callback = tf.keras.callbacks.ModelCheckpoint(
         checkpoint_path, 
