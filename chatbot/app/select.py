@@ -2,7 +2,7 @@
 
 '''
 
-select.py, select specified data from mongodb endpoint
+select.py, select specified data from mongodb endpoint.
 
 '''
 
@@ -58,7 +58,7 @@ def select(client, database, collection):
           regexString  = regexParts.map(function(x){return x.source}).join('|'),
           tokenRegex = new RegExp(regexString, 'g');
 
-          var results = { posts: [], comments: [], match_id: [], scores: [] };
+          var results = { posts: [], comments: [], match_id: [], score: [] };
           for (var i = 0; i < values.length; i++) {
             if (
               values[i] &&
@@ -89,7 +89,7 @@ def select(client, database, collection):
                     comment[0].replace(tokenRegex, ' ').trim()
                   ]);
                   results.match_id = results.match_id.concat(wantedParent);
-                  results.scores = results.scores.concat(score);
+                  results.score = results.score.concat(score);
                 }
               }
             }
@@ -99,7 +99,7 @@ def select(client, database, collection):
             results.posts.length > 0 &&
             results.comments.length > 0 &&
             results.match_id.length > 0 &&
-            results.scores.length > 0
+            results.score.length > 0
           ) {
             return { results };
           }
