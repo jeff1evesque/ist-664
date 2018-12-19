@@ -24,7 +24,7 @@ def train(
     epochs=1,
     batch_size=64,
     split=0.2,
-    checkpoint=None,
+    checkpoint=False,
     checkpoint_period=1
 ):
     #
