@@ -6,10 +6,12 @@ utility.py, helper function.
 
 '''
 
+import itertools
 import numpy as np
 import pandas as pd
 import joblib
 from nltk import word_tokenize, tag
+import matplotlib.pyplot as plt
 
 
 def penn_scale():
@@ -70,7 +72,7 @@ def normalize_data(X_data, stop_gap=40, stop_value=1, train=False):
     if train:
         ## ensure nested lists same length
         length = len(sorted(X_data, key=len, reverse=True)[0])
-        X_data=np.array([xi+[stop_gap]*(length-len(xi)) for xi in X_data])
+        X_data=np.array([xi+[stop_value]*(length-len(xi)) for xi in X_data])
         X_data=pd.DataFrame(X_data)
 
         ## get shape of dataframe
@@ -139,3 +141,43 @@ def qa_model(cwd):
     '''
 
     return joblib.load('{base}/QuestionAnswerCMU/model/random_forest.pkl'.format(base=cwd))
+
+def plot_confusion_matrix(
+    cm,
+    classes,
+    normalize=False,
+    title='Confusion matrix',
+    cmap=plt.cm.Blues
+):
+    '''
+
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+
+    '''
+
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+
+    print(cm)
+
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.tight_layout()
