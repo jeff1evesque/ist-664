@@ -6,10 +6,12 @@ utility.py, helper function.
 
 '''
 
+import itertools
 import numpy as np
 import pandas as pd
 import joblib
 from nltk import word_tokenize, tag
+import matplotlib.pyplot as plt
 
 
 def penn_scale():
@@ -22,45 +24,45 @@ def penn_scale():
     '''
 
     return {
-        'CC': 1,
-        'CD': 2,
-        'DT': 3, 
-        'EX': 4,
-        'FW': 5,
-        'IN': 6,
-        'JJ': 7,
-        'JJR': 8,
-        'JJS': 9,
-        'LS': 10,
-        'MD': 11,
-        'NN': 12,
-        'NNS': 13,
-        'NNP': 14,
-        'NNPS': 15,
-        'PDT': 16,
-        'POS': 17,
-        'PRP': 18,
-        'PRP$': 19,
-        'RB': 20,
-        'RBR': 21,
-        'RBS': 22,
-        'RP': 23,
-        'SYM': 24,
-        'TO': 25,
-        'UH': 26,
-        'VB': 27,
-        'VBD': 28,
-        'VBG': 29,
-        'VBN': 30,
-        'VBP': 31,
-        'VBZ': 32,
-        'WDT': 33,
-        'WP': 34,
-        'WP$': 35,
-        'WRB': 36
+        'CC': 2,
+        'CD': 3,
+        'DT': 4,
+        'EX': 5,
+        'FW': 6,
+        'IN': 7,
+        'JJ': 8,
+        'JJR': 9,
+        'JJS': 10,
+        'LS': 11,
+        'MD': 12,
+        'NN': 13,
+        'NNS': 14,
+        'NNP': 15,
+        'NNPS': 16,
+        'PDT': 17,
+        'POS': 18,
+        'PRP': 19,
+        'PRP$': 20,
+        'RB': 21,
+        'RBR': 22,
+        'RBS': 23,
+        'RP': 24,
+        'SYM': 25,
+        'TO': 26,
+        'UH': 27,
+        'VB': 28,
+        'VBD': 29,
+        'VBG': 30,
+        'VBN': 31,
+        'VBP': 32,
+        'VBZ': 33,
+        'WDT': 34,
+        'WP': 35,
+        'WP$': 36,
+        'WRB': 37
     }
 
-def normalize_data(X_data, stop_gap=40, stop_value=0, train=False):
+def normalize_data(X_data, stop_gap=40, stop_value=1, train=False):
     '''
 
     Ensure each sentence has exactly 'stop_gap' number of columns.
@@ -70,7 +72,7 @@ def normalize_data(X_data, stop_gap=40, stop_value=0, train=False):
     if train:
         ## ensure nested lists same length
         length = len(sorted(X_data, key=len, reverse=True)[0])
-        X_data=np.array([xi+[stop_gap]*(length-len(xi)) for xi in X_data])
+        X_data=np.array([xi+[stop_value]*(length-len(xi)) for xi in X_data])
         X_data=pd.DataFrame(X_data)
 
         ## get shape of dataframe
@@ -139,3 +141,43 @@ def qa_model(cwd):
     '''
 
     return joblib.load('{base}/QuestionAnswerCMU/model/random_forest.pkl'.format(base=cwd))
+
+def plot_confusion_matrix(
+    cm,
+    classes,
+    normalize=False,
+    title='Confusion matrix',
+    cmap=plt.cm.Blues
+):
+    '''
+
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+
+    '''
+
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+
+    print(cm)
+
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.tight_layout()
