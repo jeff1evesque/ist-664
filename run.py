@@ -94,18 +94,18 @@ def main(op='generic'):
                 inference_internal = interactive(sentence)
                 answers = inference_internal(sentence)[0]
 
-            # display response
-            if answers is None:
-                print(colorama.Fore.RED + "Answer can't be empty!" + colorama.Fore.RESET)
+                # display response
+                if answers is None:
+                    print(colorama.Fore.RED + "Answer can't be empty!" + colorama.Fore.RESET)
 
-            elif answers['best_score'] < 12:
-                print('hey {name}, maybe checkout {url}'.format(
-                    name=username,
-                    url=so_model(cwd).predict([sentence])
-                ))
+                elif answers['best_score'] < 12:
+                    print('hey {name}, maybe checkout {url}'.format(
+                        name=username,
+                        url=so_model(cwd).predict([sentence])
+                    ))
 
-            else:
-                print('{response}'.format(response=answers['answers'][answers['best_index']]))
+                else:
+                    print('{response}'.format(response=answers['answers'][answers['best_index']]))
 
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == '--insert':
