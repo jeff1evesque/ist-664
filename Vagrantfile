@@ -56,6 +56,7 @@ Vagrant.configure(2) do |config|
 
                 ## start mongodb
                 sudo service mongod start
+                sudo systemctl enable mongod.service
 
                 ## chatbot dependencies
                 sudo pip3 install nltk numpy regex python-Levenshtein colorama scikit-learn pandas joblib h5py
