@@ -43,13 +43,13 @@ def select(client, database, collection):
     reduce = Code('''
         function (key, values) {
           const regexParts = [
+              /(<([^>]+)>)/,
               /\s+/,
               /\]|\[|\(|\)/,
-              /-&gt;|&gt;|&lt;/,
+              /&gt;|&lt;/,
               /\$?[0-9]{6,}/,
-              /https?:\/\/|https?;\/\//,
               /((?:www\.|(?!www)|[a-zA-Z]+\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,})/,
-              /((?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/,
+              /((?:www\.|(?!www)|[a-zA-Z]+\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,})/,
               /[^\x01-\x7F]+/,
               /--|\*|\.\.\.|"|:-|:|!!!|\?\?\?|\+|=|\/\/|;/,
               /\s(\.-\$,:%')\s/
