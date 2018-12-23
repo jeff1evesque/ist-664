@@ -42,7 +42,6 @@ def select(client, database, collection):
     #
     reduce = Code('''
         function (key, values) {
-          const singleton = ['.', '-', '$', ',', ':', '%', "'"]
           const regexParts = [
               /\s+/,
               /\]|\[|\(|\)/,
@@ -63,8 +62,7 @@ def select(client, database, collection):
             if (
               values[i] &&
               values[i].body &&
-              values[i].parent_id &&
-              ! singleton.includes(values[i].body)
+              values[i].parent_id
             ) {
               var comment = values[i].body;
               var score = values[i].score;
@@ -74,8 +72,7 @@ def select(client, database, collection):
                     values[j] &&
                     values[j].body &&
                     values[j].body != values[i].body &&
-                    wantedParent == values[j].id &&
-                    ! singleton.includes(values[j].body)
+                    wantedParent == values[j].id
                 ) {
                   //
                   // posts + comments: collapse all whitespace to single
