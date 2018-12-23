@@ -44,15 +44,14 @@ def select(client, database, collection):
         function (key, values) {
           const regexParts = [
               /(<([^>]+)>)/,
-              /\s+/,
-              /\]|\[|\(|\)/,
               /&gt;|&lt;/,
-              /\$?[0-9]{6,}/,
-              /((?:www\.|(?!www)|[a-zA-Z]+\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,})/,
-              /((?:www\.|(?!www)|[a-zA-Z]+\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,})/,
+              /(https?:\/\/|https?;\/\/)?((?:www\.|(?!www)|[a-zA-Z]+\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,})/,
+              /(https?:\/\/|https?;\/\/)?((?:www\.|(?!www)|[a-zA-Z]+\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,})/,
+              /https?/,
               /[^\x01-\x7F]+/,
-              /--|\*|\.\.\.|"|:-|:|!!!|\?\?\?|\+|=|\/\/|;/,
-              /\s(\.-\$,:%')\s/
+              /\$?[0-9]+|[0-9]{6,}|\s[0-9]\s/,
+			  /\s-*\s|\s[\\\*]*\s|%|\s-\s|\s-|-\s|--|\?|!|\+|=|;|\]|\[|\(|\)|\*|\s\.|\s\.\s,|\s'|'\s|\"|_|\s-\s|\s\/\s|:|%|~|\\n|,|\.{2,}|\/{2,}|\s\/\s|\s\.\s/,
+              /\s{2,}/
           ],
           regexString  = regexParts.map(function(x){return x.source}).join('|'),
           tokenRegex = new RegExp(regexString, 'g');
@@ -79,12 +78,12 @@ def select(client, database, collection):
                   //     whitespace, remove bracket and parentheses, then
                   //     append tokenized sentence.
                   //
-                  results.posts = results.posts.concat([
-                    values[j].body[0].replace(tokenRegex, ' ').trim()
-                  ]);
-                  results.comments = results.comments.concat([
-                    comment[0].replace(tokenRegex, ' ').trim()
-                  ]);
+                  let postVal = values[j].body[0].replace(tokenRegex, ' ').trim();
+                  let commentVal = comment[0].replace(tokenRegex, ' ').trim();
+
+                  results.posts = results.posts.concat([postVal.replace(/\s{2,}/g, ' ')]);
+                  results.comments = results.comments.concat([commentVal.replace(/\s{2,}/, ' ')]);
+
                   results.match_id = results.match_id.concat(wantedParent);
                   results.scores = results.scores.concat(score);
                 }
