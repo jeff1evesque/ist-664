@@ -2,7 +2,7 @@
 
 '''
 
-train.py, train LSTM model
+predict.py, using loaded lstm model generate sequence.
 
 '''
 
@@ -12,7 +12,7 @@ from keras.models import load_model
 def predict(cwd, question):
     '''
 
-    predict using loaded lstm model.
+    predict sequence response.
 
     '''
 
