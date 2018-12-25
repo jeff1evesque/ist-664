@@ -198,11 +198,16 @@ def select(client, database, collection):
                   //     whitespace, remove bracket and parentheses, then
                   //     append tokenized sentence.
                   //
-                  let postVal = values[j].body[0].replace(tokenRegex, ' ').trim();
-                  let commentVal = comment[0].replace(tokenRegex, ' ').trim();
-
-                  results.posts = results.posts.concat([postVal.replace(/\s{2,}/g, ' ')]);
-                  results.comments = results.comments.concat([commentVal.replace(/\s{2,}/, ' ')]);
+                  results.posts = results.posts.concat(
+                    [values[j].body[0].replace(/(.*?)/g, function (match, capture) {
+                      return apostrophes[capture];
+                    }).replace(tokenRegex, ' ').replace(/\s{2,}/g, ' ').trim()]
+                  );
+                  results.comments = results.comments.concat(
+                    [comment[0].replace(/(.*?)/g, function (match, capture) {
+                      return apostrophes[capture];
+                    }).replace(tokenRegex, ' ').replace(/\s{2,}/, ' ').trim()]
+                  );
 
                   results.match_id = results.match_id.concat(wantedParent);
                   results.scores = results.scores.concat(score);
