@@ -53,11 +53,6 @@ def train(
     vocab_size = len(word2idx) + 1
     print('vocabulary size: {vocab}'.format(vocab=vocab_size))
 
-    # idx2word: needed by separate prediction
-    if not path.exists('{base}/model'.format(base=cwd)):
-        makedirs('{base}/model'.format(base=cwd))
-    dump(model, '{base}/model/idx2word.pkl'.format(base=cwd), compress=True)
-
     posts_train = create_posts(posts, vocab_size, post_maxlen, word2idx)
     comments_train = create_comments(
         comments,
@@ -104,6 +99,11 @@ def train(
         validation_split=split,
         callbacks = [cp_callback]
     )
+
+    # idx2word: needed by separate prediction
+    if not path.exists('{base}/model'.format(base=cwd)):
+        makedirs('{base}/model'.format(base=cwd))
+    dump(model, '{base}/model/idx2word.pkl'.format(base=cwd), compress=True)
 
     # save model
     save_model(
