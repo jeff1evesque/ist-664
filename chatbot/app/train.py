@@ -9,6 +9,8 @@ train.py, train LSTM model
 import nltk
 import collections
 import numpy as np
+from joblib import dump
+from os import path, makedirs
 from keras.layers import Input, Dense, Dropout, Activation
 from keras.models import Model, save_model
 from keras.layers.recurrent import LSTM
@@ -51,7 +53,12 @@ def train(
     vocab_size = len(word2idx) + 1
     print('vocabulary size: {vocab}'.format(vocab=vocab_size))
 
-    posts_train = create_posts(posts, vocab_size, post_maxlen=post_maxlen)
+    # idx2word: needed by separate prediction
+    if not path.exists('{base}/model'.format(base=cwd)):
+        makedirs('{base}/model'.format(base=cwd))
+    joblib.dump(clf, '{base}/model/idx2word.pkl'.format(base=cwd), compress=True)
+
+    posts_train = create_posts(posts, vocab_size, post_maxlen, word2idx)
     comments_train = create_comments(
         comments,
         vocab_size,
@@ -107,7 +114,7 @@ def train(
         period=checkpoint_period
     )
 
-def encode(sentence, maxlen,vocab_size):
+def encode(sentence, maxlen,vocab_size, word2idx):
     '''
 
     convert words to indices
@@ -121,18 +128,7 @@ def encode(sentence, maxlen,vocab_size):
         indices[i, word2idx[w]] = 1
     return indices
 
-def decode(indices, calc_argmax=True):
-    '''
-
-    convert indices to words.
-
-    '''
-
-    if calc_argmax:
-        indices = np.argmax(indices, axis=-1)
-    return ' '.join(idx2word[x] for x in indices)
-
-def create_posts(posts, vocab_size, post_maxlen):
+def create_posts(posts, vocab_size, post_maxlen, word2idx):
     '''
 
     vectorize posts using maximum post length.
@@ -141,7 +137,7 @@ def create_posts(posts, vocab_size, post_maxlen):
 
     post_idx = np.zeros(shape=(len(posts),post_maxlen, vocab_size))
     for p in range(len(posts)):
-        post = encode(posts[p], post_maxlen,vocab_size)
+        post = encode(posts[p], post_maxlen,vocab_size, word2idx)
         post_idx[p] = post
     return post_idx
 
