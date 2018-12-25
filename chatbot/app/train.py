@@ -135,7 +135,7 @@ def create_posts(posts, vocab_size, post_maxlen, word2idx):
 
     '''
 
-    post_idx = np.zeros(shape=(len(posts),post_maxlen, vocab_size))
+    post_idx = np.zeros(shape=(len(posts), post_maxlen, vocab_size))
     for p in range(len(posts)):
         post = encode(posts[p], post_maxlen,vocab_size, word2idx)
         post_idx[p] = post
