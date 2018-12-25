@@ -19,11 +19,13 @@ from chatbot.nmt_chatbot.inference import interactive
 from chatbot.app.train import train
 from chatbot.app.insert import insert
 from chatbot.app.select import select
+from chatbot.app.predict import predict
 from chatbot.config import (
     mongos_endpoint,
     database,
     collection,
-    data_directory
+    data_directory,
+    username
 )
 from QuestionAnswerCMU.utility import (
     tokenizer,
@@ -33,9 +35,6 @@ from QuestionAnswerCMU.utility import (
     qa_model
 )
 from StackOverflow.utility import tokenize, so_model
-
-# local variables
-username='jimmy'
 
 def main(op='generic'):
     '''
@@ -51,7 +50,7 @@ def main(op='generic'):
             '{base}/chatbot/{subdir}'.format(base=cwd, subdir=data_directory)
         )
 
-    elif op == 'local':
+    elif op == 'train':
         client = MongoClient(mongos_endpoint)
         results = select(client, database, collection)
 
@@ -69,6 +68,12 @@ def main(op='generic'):
         comments = combined['comments']
         scores = combined['scores']
         model = train(posts, comments, cwd=cwd)
+
+    elif op == 'local':
+        while True:
+            # prompt input
+            sentence = input('\n> ')
+            print(predict(sentence))
 
     elif op == 'generic':
         # interative session
@@ -110,6 +115,9 @@ def main(op='generic'):
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == '--insert':
         main(op='insert')
+
+    elif len(sys.argv) > 1 and sys.argv[1] == '--train':
+        main(op='train')
 
     elif len(sys.argv) > 1 and sys.argv[1] == '--local':
         main(op='local')
