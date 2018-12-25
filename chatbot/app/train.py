@@ -56,7 +56,7 @@ def train(
     # idx2word: needed by separate prediction
     if not path.exists('{base}/model'.format(base=cwd)):
         makedirs('{base}/model'.format(base=cwd))
-    dump(clf, '{base}/model/idx2word.pkl'.format(base=cwd), compress=True)
+    dump(model, '{base}/model/idx2word.pkl'.format(base=cwd), compress=True)
 
     posts_train = create_posts(posts, vocab_size, post_maxlen, word2idx)
     comments_train = create_comments(
