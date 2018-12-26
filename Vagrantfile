@@ -48,8 +48,8 @@ Vagrant.configure(2) do |config|
             end
             node.vm.provision 'shell', inline: <<-SHELL
                 sudo apt-get install -y dos2unix
-                dosunix utility/*
-                ./utility/single_stack
+                dos2unix "#{project_root}"/utility/* && chmod u+x "#{project_root}"/utility/*
+                ".#{project_root}/utility/single_stack #{project_root} #{dropbox_project}"
             SHELL
             node.vm.network 'private_network', ip: machine[:ip]
         end

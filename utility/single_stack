@@ -1,5 +1,9 @@
 #!/bin/bash
 
+## local variables
+BASEDIR="$1"
+DROPBOX_PROJECT="$2"
+
 ## install mongodb
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
 echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
@@ -18,7 +22,7 @@ sudo pip3 install Keras==2.1.2
 python3 -m nltk.downloader punkt averaged_perceptron_tagger
 
 ## chatbot: download + unzip
-wget "https://www.dropbox.com/s/p1say7bqpn8gfmt/#{dropbox_project}.zip" -O "#{project_root}/chatbot/#{dropbox_project}.zip"
-unzip -n "#{project_root}/chatbot/#{dropbox_project}.zip" -d "#{project_root}/chatbot"
-rm "#{project_root}/chatbot/#{dropbox_project}.zip"
-cp -f "#{project_root}/chatbot/app/inference.py" "#{project_root}/chatbot/#{dropbox_project}/inference.py"
+wget "https://www.dropbox.com/s/p1say7bqpn8gfmt/$DROPBOX_PROJECT.zip" -O "$BASEDIR/chatbot/$DROPBOX_PROJECT.zip"
+unzip -n "$BASEDIR/chatbot/$DROPBOX_PROJECT.zip" -d "$BASEDIR/chatbot"
+rm "$BASEDIR/chatbot/$DROPBOX_PROJECT.zip"
+cp -f "$BASEDIR/chatbot/app/inference.py" "$BASEDIR/chatbot/$DROPBOX_PROJECT/inference.py"
