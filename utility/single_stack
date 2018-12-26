@@ -20,8 +20,11 @@ sudo pip3 install nltk numpy regex python-Levenshtein colorama scikit-learn pand
 sudo pip3 install Keras==2.2.0
 python3 -m nltk.downloader punkt averaged_perceptron_tagger
 
-## conditionally install tensorflow
-if [ ${BASEDIR+x} ];
+##
+## install tensorflow: install tensorflow-cpu, if no base directory provided,
+##     otherwise install tensorflow-gpu.
+##
+if [ "${BASEDIR}x" = 'x' ];
 then
   ./install_cuda
   ./install_tensorflow
