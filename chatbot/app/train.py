@@ -84,7 +84,7 @@ def train(
     print (model.summary())
 
     # model checkpoint
-    checkpoint_path = '{base}/model/cp.ckpt'.format(base=cwd)
+    checkpoint_path = '{base}/model/checkpoint.ckpt'.format(base=cwd)
     checkpoint_dir = path.dirname(checkpoint_path)
     cp_callback = callbacks.ModelCheckpoint(
         checkpoint_path,
