@@ -9,8 +9,10 @@ train.py, train LSTM model
 import nltk
 import collections
 import numpy as np
+from os import path
 from joblib import dump
 from os import path, makedirs
+from keras import callbacks
 from keras.layers import Input, Dense, Dropout, Activation
 from keras.models import Model, save_model
 from keras.layers.recurrent import LSTM
@@ -43,8 +45,9 @@ def train(
     counter = collections.Counter()
 
     # create vocabulary
-    for comment in comments:
-        for word in nltk.word_tokenize(comment):
+    sentences = posts + comments
+    for sentence in sentences:
+        for word in nltk.word_tokenize(sentence):
             counter[word] += 1
 
     word2idx = {w:(i+1) for i,(w,_) in enumerate(counter.most_common())}
@@ -57,7 +60,8 @@ def train(
     comments_train = create_comments(
         comments,
         vocab_size,
-        comment_maxlen=comment_maxlen
+        comment_maxlen,
+        word2idx
     )
 
     # recurrent network, repeat vector, time distributed network
@@ -81,8 +85,8 @@ def train(
 
     # model checkpoint
     checkpoint_path = '{base}/model/cp.ckpt'.format(base=cwd)
-    checkpoint_dir = os.path.dirname(checkpoint_path)
-    cp_callback = tf.keras.callbacks.ModelCheckpoint(
+    checkpoint_dir = path.dirname(checkpoint_path)
+    cp_callback = callbacks.ModelCheckpoint(
         checkpoint_path,
         verbose=1,
         period=checkpoint_period
@@ -97,24 +101,23 @@ def train(
         batch_size=batch_size,
         epochs=epochs,
         validation_split=split,
-        callbacks = [cp_callback]
+        callbacks=[cp_callback]
     )
 
     # idx2word: needed by separate prediction
     if not path.exists('{base}/model'.format(base=cwd)):
         makedirs('{base}/model'.format(base=cwd))
-    dump(model, '{base}/model/idx2word.pkl'.format(base=cwd), compress=True)
+    dump(idx2word, '{base}/model/idx2word.pkl'.format(base=cwd), compress=True)
 
     # save model
     save_model(
         model,
         '{base}/model/chatbot.h5'.format(base=cwd),
         overwrite=True,
-        include_optimizer=True,
-        period=checkpoint_period
+        include_optimizer=True
     )
 
-def encode(sentence, maxlen,vocab_size, word2idx):
+def encode(sentence, maxlen, vocab_size, word2idx):
     '''
 
     convert words to indices
@@ -123,7 +126,6 @@ def encode(sentence, maxlen,vocab_size, word2idx):
 
     indices = np.zeros((maxlen, vocab_size))
     for i, w in enumerate(nltk.word_tokenize(sentence)):
-        print('i: {i}, w: {w}'.format(i=i, w=w))
         if i == maxlen: break
         indices[i, word2idx[w]] = 1
     return indices
@@ -137,11 +139,11 @@ def create_posts(posts, vocab_size, post_maxlen, word2idx):
 
     post_idx = np.zeros(shape=(len(posts), post_maxlen, vocab_size))
     for p in range(len(posts)):
-        post = encode(posts[p], post_maxlen,vocab_size, word2idx)
+        post = encode(posts[p], post_maxlen, vocab_size, word2idx)
         post_idx[p] = post
     return post_idx
 
-def create_comments(comments, vocab_size, comment_maxlen):
+def create_comments(comments, vocab_size, comment_maxlen, word2idx):
     '''
 
     vectorize posts using maximum comment length.
@@ -150,6 +152,6 @@ def create_comments(comments, vocab_size, comment_maxlen):
 
     comment_idx = np.zeros(shape=(len(comments), comment_maxlen, vocab_size))
     for c in range(len(comments)):
-        comment = encode(comments[c], comment_maxlen,vocab_size)
+        comment = encode(comments[c], comment_maxlen, vocab_size, word2idx)
         comment_idx[c] = comment
     return comment_idx
