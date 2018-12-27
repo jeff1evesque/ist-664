@@ -47,28 +47,11 @@ Vagrant.configure(2) do |config|
                 vb.customize ['modifyvm', :id, '--memory', machine[:ram]]
             end
             node.vm.provision 'shell', inline: <<-SHELL
-                ## install mongodb
-                sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
-                echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
-                sudo apt-get update -y
-                sudo apt-get install -y mongodb-org python3-pip dos2unix unzip
-                sudo pip3 install pymongo
-
-                ## start mongodb
-                sudo service mongod start
-
-                ## chatbot dependencies
-                sudo pip3 install nltk numpy regex python-Levenshtein colorama scikit-learn pandas joblib
-                sudo pip3 install tensorflow==1.4.1
-                sudo pip3 install Keras==2.1.2
-                python3 -m nltk.downloader punkt averaged_perceptron_tagger
-
-                ## chatbot: download + unzip
-                wget "https://www.dropbox.com/s/p1say7bqpn8gfmt/#{dropbox_project}.zip" -O "#{project_root}/chatbot/#{dropbox_project}.zip"
-                unzip -n "#{project_root}/chatbot/#{dropbox_project}.zip" -d "#{project_root}/chatbot"
-                rm "#{project_root}/chatbot/#{dropbox_project}.zip"
-                cp -f "#{project_root}/chatbot/app/inference.py" "#{project_root}/chatbot/#{dropbox_project}/inference.py"
-
+                sudo apt-get install -y dos2unix
+                dos2unix "#{project_root}"/utility/*
+                chmod u+x "#{project_root}"/utility/*
+                cd "#{project_root}"/utility
+                ./single_stack "#{project_root}" "#{dropbox_project}"
             SHELL
             node.vm.network 'private_network', ip: machine[:ip]
         end

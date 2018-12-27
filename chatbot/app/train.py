@@ -6,140 +6,108 @@ train.py, train LSTM model
 
 '''
 
-import os
-import joblib
+import nltk
+import collections
 import numpy as np
-import tensorflow as tf
-from keras.models import Model, save_model
-from keras.layers import Input, LSTM, Dense
+from os import path
+from joblib import dump
 from os import path, makedirs
-from keras.models import model_from_json
-from datetime import datetime
+from keras import callbacks
+from keras.layers import Input, Dense, Dropout, Activation
+from keras.models import Model, save_model
+from keras.layers.recurrent import LSTM
+from keras.layers.wrappers import Bidirectional
+from keras.layers import RepeatVector, TimeDistributed, ActivityRegularization
 
 
 def train(
     posts,
     comments,
-    cwd,
     epochs=1,
-    batch_size=64,
+    batch_size=32,
     split=0.2,
+    n_hidden=128,
+    post_maxlen=10,
+    comment_maxlen=20,
+    dropout=0.2,
+    recurrent_dropout=0.2,
     checkpoint=False,
-    checkpoint_period=1
+    checkpoint_period=1,
+    cwd='~'
 ):
-    #
+    '''
+    
+    generate lstm recurrent neural network.    
+    
+    '''
+
     # local variables
-    #
-    # Note: posts, comments, and nb_samples should be the same length.
-    #
-    post_chars = set()
-    comment_chars = set()
-    post_lookup_index = {}
-    post_lookup_char = {}
-    comment_lookup_char = {}
-    comment_lookup_index = {}
-    nb_samples = int(len(posts) / 1000)
+    counter = collections.Counter()
 
-    # split sentences by chararacters
-    for line in range(nb_samples):
-	    #
-	    # <sent>, start of the sentence
-        # </sent>, end of the sentence
-	    #
-        post_line = posts[line]
-        comment_line = '<sent>' + comments[line] + '</sent>'
+    # create vocabulary
+    sentences = posts + comments
+    for sentence in sentences:
+        for word in nltk.word_tokenize(sentence):
+            counter[word] += 1
 
-        for char in post_line:
-            if (char not in post_chars):
-                post_chars.add(char)
+    word2idx = {w:(i+1) for i,(w,_) in enumerate(counter.most_common())}
+    idx2word = {v:k for k,v in word2idx.items()}
+    idx2word[0] = 'PAD'
+    vocab_size = len(word2idx) + 1
+    print('vocabulary size: {vocab}'.format(vocab=vocab_size))
 
-        for char in comment_line:
-            if (char not in comment_chars):
-                comment_chars.add(char)
+    posts_train = create_posts(posts, vocab_size, post_maxlen, word2idx)
+    comments_train = create_comments(
+        comments,
+        vocab_size,
+        comment_maxlen,
+        word2idx
+    )
 
-    comment_chars = sorted(list(comment_chars))
-    post_chars = sorted(list(post_chars))
+    # recurrent network, repeat vector, time distributed network
+    post_layer = Input(shape=(post_maxlen, vocab_size))
+    encoder_rnn = LSTM(
+        n_hidden,
+        dropout=dropout,
+        recurrent_dropout=recurrent_dropout
+    )(post_layer)
+    repeat_encode = RepeatVector(comment_maxlen)(encoder_rnn)
+    dense_layer = TimeDistributed(Dense(vocab_size))(repeat_encode)
+    regularized_layer = ActivityRegularization(l2=1)(dense_layer)
+    softmax_layer = Activation('softmax')(regularized_layer)
+    model = Model([post_layer], [softmax_layer])
+    model.compile(
+        loss='categorical_crossentropy',
+        optimizer='adam',
+        metrics=['accuracy']
+    )
+    print (model.summary())
 
-    for k, v in enumerate(post_chars):
-        post_lookup_index[k] = v
-        post_lookup_char[v] = k
+    # model checkpoint
+    checkpoint_path = '{base}/model/checkpoint.ckpt'.format(base=cwd)
+    checkpoint_dir = path.dirname(checkpoint_path)
+    cp_callback = callbacks.ModelCheckpoint(
+        checkpoint_path,
+        verbose=1,
+        period=checkpoint_period
+    )
 
-    for k, v in enumerate(comment_chars):
-        comment_lookup_char[k] = v
-        comment_lookup_index[v] = k
-
-    max_len_posts = max([len(line) for line in posts])
-    max_len_comments = max([len(line) for line in comments])
-
-    tokenized_posts = np.zeros(shape=(
-        nb_samples,
-        max_len_posts,
-        len(post_chars)
-    ), dtype='float32')
-    tokenized_comments = np.zeros(shape=(
-        nb_samples,
-        max_len_comments,
-        len(comment_chars)
-    ), dtype='float32')
-    target_data = np.zeros((
-        nb_samples,
-        max_len_comments,
-        len(comment_chars)
-    ),dtype='float32')
-
-    # vectorize post and comments
-    for i in range(nb_samples):
-        for k, char in enumerate(posts[i]):
-            tokenized_posts[i, k, post_lookup_char[char]] = 1
-
-        for k, char in enumerate(comments[i]):
-            tokenized_comments[i, k, comment_lookup_index[char]] = 1
-
-            # decoder_target_data will be ahead by one timestep and will not include the start chararacter.
-            if k > 0:
-                target_data[i, k-1, comment_lookup_index[char]] = 1
-
-    # encoder
-    encoder_input = Input(shape=(None, len(post_chars)))
-    encoder_LSTM = LSTM(256, return_state = True)
-    encoder_outputs, encoder_h, encoder_c = encoder_LSTM (encoder_input)
-    encoder_states = [encoder_h, encoder_c]
-
-    # decoder
-    decoder_input = Input(shape=(None, len(comment_chars)))
-    decoder_LSTM = LSTM(256, return_sequences=True, return_state = True)
-    decoder_out, _ , _ = decoder_LSTM(decoder_input, initial_state=encoder_states)
-    decoder_dense = Dense(len(comment_chars), activation='softmax')
-    decoder_out = decoder_dense (decoder_out)
-
-    # checkpoint callback
-    if checkpoint:
-        cp = '{base}/model/cp--{date}.ckpt'.format(base=cwd, date=datetime.now())
-        cp_dir = os.path.dirname(cp)
-        cp_callback = [tf.keras.callbacks.ModelCheckpoint(
-            cp_dir,
-            save_weights_only=True,
-            period=checkpoint_period,
-            verbose=1
-        )]
-    else:
-        cp_callback = False
-
-    # generate model
-    model = Model(inputs=[encoder_input, decoder_input], outputs=[decoder_out])
-    model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
+    # train model
+    posts_train_2 = posts_train.astype('float32')
+    comments_train_2 = comments_train.astype('float32')
     model.fit(
-        x=[tokenized_posts, tokenized_comments], 
-        y=target_data,
+        posts_train_2,
+        comments_train_2,
         batch_size=batch_size,
         epochs=epochs,
         validation_split=split,
-        callbacks = cp_callback
+        callbacks=[cp_callback]
     )
 
-    # model directory
+    # idx2word: needed by separate prediction
     if not path.exists('{base}/model'.format(base=cwd)):
         makedirs('{base}/model'.format(base=cwd))
+    dump(idx2word, '{base}/model/idx2word.pkl'.format(base=cwd), compress=True)
 
     # save model
     save_model(
@@ -148,3 +116,42 @@ def train(
         overwrite=True,
         include_optimizer=True
     )
+
+def encode(sentence, maxlen, vocab_size, word2idx):
+    '''
+
+    convert words to indices
+
+    '''
+
+    indices = np.zeros((maxlen, vocab_size))
+    for i, w in enumerate(nltk.word_tokenize(sentence)):
+        if i == maxlen: break
+        indices[i, word2idx[w]] = 1
+    return indices
+
+def create_posts(posts, vocab_size, post_maxlen, word2idx):
+    '''
+
+    vectorize posts using maximum post length.
+
+    '''
+
+    post_idx = np.zeros(shape=(len(posts), post_maxlen, vocab_size))
+    for p in range(len(posts)):
+        post = encode(posts[p], post_maxlen, vocab_size, word2idx)
+        post_idx[p] = post
+    return post_idx
+
+def create_comments(comments, vocab_size, comment_maxlen, word2idx):
+    '''
+
+    vectorize posts using maximum comment length.
+
+    '''
+
+    comment_idx = np.zeros(shape=(len(comments), comment_maxlen, vocab_size))
+    for c in range(len(comments)):
+        comment = encode(comments[c], comment_maxlen, vocab_size, word2idx)
+        comment_idx[c] = comment
+    return comment_idx

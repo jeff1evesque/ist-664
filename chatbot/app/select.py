@@ -42,18 +42,15 @@ def select(client, database, collection):
     #
     reduce = Code('''
         function (key, values) {
-          const singleton = ['.', '-', '$', ',', ':', '%', "'"]
           const regexParts = [
-              /\s+/,
-              /\]|\[|\(|\)/,
-              /-&gt;|&gt;|&lt;/,
-              /\$?[0-9]{6,}/,
-              /https?:\/\/|https?;\/\//,
-              /((?:www\.|(?!www)|[a-zA-Z]+\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,})/,
-              /((?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/,
+              /(<([^>]+)>)/,
+              /&gt;|&lt;/,
+              /(https?:\/\/|https?;\/\/)?((?:www\.|(?!www)|[a-zA-Z]+\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,})/,
+              /https?/,
               /[^\x01-\x7F]+/,
-              /--|\*|\.\.\.|"|:-|:|!!!|\?\?\?|\+|=|\/\/|;/,
-              /\s(\.-\$,:%')\s/
+              /\$?[0-9]+|[0-9]{6,}|\s[0-9]\s/,
+			  /\s-*\s|\s[\\\*]*\s|%|\s-\s|\s-|-\s|--|\?|!|\+|=|;|\]|\[|\(|\)|\*|\s\.|\s\.\s,|\s'|'\s|\"|_|\s-\s|\s\/\s|:|%|~|\\n|,|\.{2,}|\/{2,}|\s\/\s|\s\.\s/,
+              /\s{2,}/
           ],
           regexString  = regexParts.map(function(x){return x.source}).join('|'),
           tokenRegex = new RegExp(regexString, 'g');
@@ -63,8 +60,7 @@ def select(client, database, collection):
             if (
               values[i] &&
               values[i].body &&
-              values[i].parent_id &&
-              ! singleton.includes(values[i].body)
+              values[i].parent_id
             ) {
               var comment = values[i].body;
               var score = values[i].score;
@@ -74,20 +70,20 @@ def select(client, database, collection):
                     values[j] &&
                     values[j].body &&
                     values[j].body != values[i].body &&
-                    wantedParent == values[j].id &&
-                    ! singleton.includes(values[j].body)
+                    wantedParent == values[j].id
                 ) {
                   //
                   // posts + comments: collapse all whitespace to single
                   //     whitespace, remove bracket and parentheses, then
                   //     append tokenized sentence.
                   //
-                  results.posts = results.posts.concat([
-                    values[j].body[0].replace(tokenRegex, ' ').trim()
-                  ]);
-                  results.comments = results.comments.concat([
-                    comment[0].replace(tokenRegex, ' ').trim()
-                  ]);
+                  results.posts = results.posts.concat(
+                    [values[j].body[0].replace(tokenRegex, ' ').replace(/\s{2,}/g, ' ').trim()]
+                  );
+                  results.comments = results.comments.concat(
+                    [comment[0].replace(tokenRegex, ' ').replace(/\s{2,}/, ' ').trim()]
+                  );
+
                   results.match_id = results.match_id.concat(wantedParent);
                   results.scores = results.scores.concat(score);
                 }
