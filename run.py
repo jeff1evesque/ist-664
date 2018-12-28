@@ -15,12 +15,12 @@ from nltk.tokenize import TreebankWordTokenizer, RegexpTokenizer
 # general requirements
 import sys
 import joblib
-from reddit.nmt_chatbot.inference import interactive
-from reddit.app.train import train
-from reddit.app.insert import insert
-from reddit.app.select import select
-from reddit.app.predict import predict
-from reddit.config import (
+from Reddit.nmt_chatbot.inference import interactive
+from Reddit.app.train import train
+from Reddit.app.insert import insert
+from Reddit.app.select import select
+from Reddit.app.predict import predict
+from Reddit.config import (
     mongos_endpoint,
     database,
     collection,
@@ -47,7 +47,7 @@ def main(op='generic'):
             client,
             database,
             collection,
-            '{base}/reddit/{subdir}'.format(base=cwd, subdir=data_directory)
+            '{base}/Reddit/{subdir}'.format(base=cwd, subdir=data_directory)
         )
 
     elif op == 'train':

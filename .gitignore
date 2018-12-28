@@ -11,5 +11,4 @@ ubuntu-xenial-16.04-cloudimg-console.log
 # ignore directories
 **/__pycache__
 .vagrant/
-reddit/analysis/
-reddit/nmt_chatbot/
+Reddit/nmt_chatbot/
