@@ -36,7 +36,7 @@ else
 fi
 
 ## chatbot: download + unzip
-wget "https://www.dropbox.com/s/p1say7bqpn8gfmt/${DROPBOX_PROJECT}.zip" -O "${BASEDIR}/chatbot/${DROPBOX_PROJECT}.zip"
-unzip -n "${BASEDIR}/chatbot/${DROPBOX_PROJECT}.zip" -d "${BASEDIR}/chatbot"
-rm "${BASEDIR}/chatbot/${DROPBOX_PROJECT}.zip"
-cp -f "${BASEDIR}/chatbot/app/inference.py" "${BASEDIR}/chatbot/${DROPBOX_PROJECT}/inference.py"
+wget "https://www.dropbox.com/s/p1say7bqpn8gfmt/${DROPBOX_PROJECT}.zip" -O "${BASEDIR}/reddit/${DROPBOX_PROJECT}.zip"
+unzip -n "${BASEDIR}/reddit/${DROPBOX_PROJECT}.zip" -d "${BASEDIR}/reddit"
+rm "${BASEDIR}/reddit/${DROPBOX_PROJECT}.zip"
+cp -f "${BASEDIR}/reddit/app/inference.py" "${BASEDIR}/reddit/${DROPBOX_PROJECT}/inference.py"
