@@ -110,11 +110,11 @@ def train(
     print (model.summary())
 
     # directory dependency
-    if not path.exists('{base}/reddit/model'.format(base=cwd)):
-        makedirs('{base}/reddit/model'.format(base=cwd))
+    if not path.exists('{base}/Reddit/model'.format(base=cwd)):
+        makedirs('{base}/Reddit/model'.format(base=cwd))
 
     # model checkpoint
-    checkpoint_path = '{base}/reddit/model/checkpoint.ckpt'.format(base=cwd)
+    checkpoint_path = '{base}/Reddit/model/checkpoint.ckpt'.format(base=cwd)
     checkpoint_dir = path.dirname(checkpoint_path)
     cp_callback = callbacks.ModelCheckpoint(
         checkpoint_path,
@@ -137,14 +137,14 @@ def train(
     # idx2word: needed by separate prediction
     dump(
         idx2word,
-        '{base}/reddit/model/idx2word.pkl'.format(base=cwd),
+        '{base}/Reddit/model/idx2word.pkl'.format(base=cwd),
         compress=True
     )
 
     # save model
     save_model(
         model,
-        '{base}/reddit/model/reddit.h5'.format(base=cwd),
+        '{base}/Reddit/model/Reddit.h5'.format(base=cwd),
         overwrite=True,
         include_optimizer=True
     )
