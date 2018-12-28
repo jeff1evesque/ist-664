@@ -50,12 +50,14 @@ def train(
         for word in nltk.word_tokenize(sentence):
             counter[word] += 1
 
+    # create word + index references
     word2idx = {w:(i+1) for i,(w,_) in enumerate(counter.most_common())}
     idx2word = {v:k for k,v in word2idx.items()}
     idx2word[0] = 'PAD'
     vocab_size = len(word2idx) + 1
     print('vocabulary size: {vocab}'.format(vocab=vocab_size))
 
+    # vectorize posts + comments
     posts_train = create_posts(posts, vocab_size, post_maxlen, word2idx)
     comments_train = create_comments(
         comments,
@@ -64,17 +66,41 @@ def train(
         word2idx
     )
 
-    # recurrent network, repeat vector, time distributed network
+    # recurrent neural network (LSTM)
     post_layer = Input(shape=(post_maxlen, vocab_size))
     encoder_rnn = LSTM(
         n_hidden,
         dropout=dropout,
         recurrent_dropout=recurrent_dropout
     )(post_layer)
+
+    #
+    # repeat vector: repeats the given vector iteratively for each timestep by
+    #     generating it's own hidden state.
+    #
     repeat_encode = RepeatVector(comment_maxlen)(encoder_rnn)
+
+    #
+    # time distributed network: allows for one-to-many (input-to-output), or
+    #     many-to-many (input-to-output) cases. Specifically, the dense
+    #     function is applied to each output over time. Otherwise, the dense
+    #     function is only applied to the last output.
+    #
     dense_layer = TimeDistributed(Dense(vocab_size))(repeat_encode)
+
+    #
+    # activation regularization (l2): penalizes for large weights, by adding
+    #     value to the loss. This causes a decrease in parameter values.     
+    #
     regularized_layer = ActivityRegularization(l2=1)(dense_layer)
+
+    #
+    # softmax (final layer): takes an un-normalized vector, and normalizes the
+    #     the vector into a probability distribution.
+    #
     softmax_layer = Activation('softmax')(regularized_layer)
+
+    # general model
     model = Model([post_layer], [softmax_layer])
     model.compile(
         loss='categorical_crossentropy',
@@ -83,8 +109,12 @@ def train(
     )
     print (model.summary())
 
+    # directory dependency
+    if not path.exists('{base}/reddit/model'.format(base=cwd)):
+        makedirs('{base}/reddit/model'.format(base=cwd))
+
     # model checkpoint
-    checkpoint_path = '{base}/model/checkpoint.ckpt'.format(base=cwd)
+    checkpoint_path = '{base}/reddit/model/checkpoint.ckpt'.format(base=cwd)
     checkpoint_dir = path.dirname(checkpoint_path)
     cp_callback = callbacks.ModelCheckpoint(
         checkpoint_path,
@@ -105,14 +135,16 @@ def train(
     )
 
     # idx2word: needed by separate prediction
-    if not path.exists('{base}/model'.format(base=cwd)):
-        makedirs('{base}/model'.format(base=cwd))
-    dump(idx2word, '{base}/model/idx2word.pkl'.format(base=cwd), compress=True)
+    dump(
+        idx2word,
+        '{base}/reddit/model/idx2word.pkl'.format(base=cwd),
+        compress=True
+    )
 
     # save model
     save_model(
         model,
-        '{base}/model/chatbot.h5'.format(base=cwd),
+        '{base}/reddit/model/reddit.h5'.format(base=cwd),
         overwrite=True,
         include_optimizer=True
     )

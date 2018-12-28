@@ -17,7 +17,7 @@ def predict(cwd, question):
 
     '''
 
-    model = load_model('{base}/model/chatbot.h5'.format(base=cwd))
+    model = load_model('{base}/reddit/model/chatbot.h5'.format(base=cwd))
     return model.predict(decode(question), cwd=cwd)
 
 def decode(indices, calc_argmax=True, cwd=''):
@@ -27,7 +27,7 @@ def decode(indices, calc_argmax=True, cwd=''):
 
     '''
 
-    idx2word = load('{base}/model/idx2word.pkl'.format(base=cwd))
+    idx2word = load('{base}/reddit/model/idx2word.pkl'.format(base=cwd))
     if calc_argmax:
         indices = np.argmax(indices, axis=-1)
     return ' '.join(idx2word[x] for x in indices)

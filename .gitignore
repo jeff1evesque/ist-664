@@ -4,12 +4,12 @@ config.py
 **/nmt_chatbot.zip
 ubuntu-xenial-16.04-cloudimg-console.log
 **/*.ipynb_checkpoints
-model/idx2word.pkl
-model/checkpoint.ckpt
+**/*.ckpt
+**/~$*.docx
 
 
 # ignore directories
 **/__pycache__
 .vagrant/
-chatbot/analysis/
-chatbot/nmt_chatbot/
+reddit/analysis/
+reddit/nmt_chatbot/
