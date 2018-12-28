@@ -5,10 +5,11 @@ config.py
 ubuntu-xenial-16.04-cloudimg-console.log
 **/*.ipynb_checkpoints
 **/*.ckpt
+**/~$*.docx
 
 
 # ignore directories
 **/__pycache__
 .vagrant/
-chatbot/analysis/
-chatbot/nmt_chatbot/
+reddit/analysis/
+reddit/nmt_chatbot/
