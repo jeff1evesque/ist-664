@@ -131,18 +131,18 @@ def train(
     )
 
     # idx2word: needed by separate prediction
-    if not path.exists('{base}/chatbot/model'.format(base=cwd)):
-        makedirs('{base}/chatbot/model'.format(base=cwd))
+    if not path.exists('{base}/reddit/model'.format(base=cwd)):
+        makedirs('{base}/reddit/model'.format(base=cwd))
     dump(
         idx2word,
-        '{base}/chatbot/model/idx2word.pkl'.format(base=cwd),
+        '{base}/reddit/model/idx2word.pkl'.format(base=cwd),
         compress=True
     )
 
     # save model
     save_model(
         model,
-        '{base}/chatbot/model/chatbot.h5'.format(base=cwd),
+        '{base}/reddit/model/reddit.h5'.format(base=cwd),
         overwrite=True,
         include_optimizer=True
     )
