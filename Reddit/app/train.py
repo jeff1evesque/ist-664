@@ -144,7 +144,7 @@ def train(
     # save model
     save_model(
         model,
-        '{base}/Reddit/model/Reddit.h5'.format(base=cwd),
+        '{base}/Reddit/model/rnn_lstm.h5'.format(base=cwd),
         overwrite=True,
         include_optimizer=True
     )
