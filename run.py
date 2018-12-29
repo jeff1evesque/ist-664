@@ -17,7 +17,7 @@ import sys
 import joblib
 from Reddit.nmt_chatbot.inference import interactive
 from Reddit.app.train import train
-from Reddit.app.insert import insert
+from Reddit.app.insert import insert_dataset
 from Reddit.app.select import select
 from Reddit.app.predict import predict
 from Reddit.config import (
@@ -43,7 +43,7 @@ def main(op='generic'):
 
     if op == 'insert':
         client = MongoClient(mongos_endpoint)
-        insert(
+        insert_dataset(
             client,
             database,
             collection,
