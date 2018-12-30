@@ -20,7 +20,7 @@ from Reddit.app.train import train
 from Reddit.app.insert import insert_dataset
 from Reddit.app.select import select
 from Reddit.app.predict import predict
-from Reddit.config import (
+from config import (
     mongos_endpoint,
     database,
     collection,
