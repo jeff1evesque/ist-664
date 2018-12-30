@@ -14,7 +14,7 @@ data_directory = 'data'
 username='jimmy'
 
 # recurrent neural network
-epochs = 1
+epochs = 5
 batch_size = 32
 split = 0.2
 n_hidden = 128
