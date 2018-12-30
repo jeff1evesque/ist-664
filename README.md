@@ -4,9 +4,9 @@ This is final project for a short 10 week course in Natural Language Processing 
 
 ## Dependency
 
-Since this project is a proof of concept, the necessary build has been automated using a `Vagrantfile`. This local developmet requires both ([vagrant](https://www.vagrantup.com/) + [virtualbox](https://www.virtualbox.org/)) to be installed. However, a supplied [`docker-compose.yml`](https://github.com/jeff1evesque/ist-664/blob/master/docker-compose.yml) could simulate a big data scenario, where ingested data is distributed across multiple mongodb nodes. For production systems, kubernetes would likely replace the `docker-compose` variant. Additionally, supplied [utility](https://github.com/jeff1evesque/ist-664/tree/master/utility) scripts can be used to install and configure [cuda](https://www.geforce.com/hardware/technology/cuda) and gpu-based [tensorflow](https://www.tensorflow.org/).
+Since this project is a proof of concept, the necessary build has been automated using a [`Vagrantfile`](https://github.com/jeff1evesque/ist-664/blob/master/Vagrantfile). This local developmet requires both ([vagrant](https://www.vagrantup.com/) + [virtualbox](https://www.virtualbox.org/)) to be installed. However, a supplied [`docker-compose.yml`](https://github.com/jeff1evesque/ist-664/blob/master/docker-compose.yml) could simulate a big data scenario, where ingested data is distributed across multiple mongodb nodes. For production systems, kubernetes would likely replace the `docker-compose` variant. Additionally, supplied [utility](https://github.com/jeff1evesque/ist-664/tree/master/utility) scripts can be used to install and configure [cuda](https://www.geforce.com/hardware/technology/cuda) and gpu-based [tensorflow](https://www.tensorflow.org/).
 
-Lastly, a supplied [`config-TEMPLATE.py`](https://github.com/jeff1evesque/ist-664/blob/master/config-TEMPLATE.py), will need to be copied in the same directory as `config.py`. Though values can be adjusted, the `mongos_endpoint` will need to match the mongodb endpoint. Specifically, if the local vagrant instance was deployed then the following configurations would be appropriate:
+Lastly, a supplied [`config-TEMPLATE.py`](https://github.com/jeff1evesque/ist-664/blob/master/config-TEMPLATE.py), will need to be copied in the same directory as `config.py`. Though values can be adjusted, the `mongos_endpoint` will need to match the mongodb endpoint. Specifically, if the local vagrant instance was deployed, then the following configurations would be appropriate:
 
 ```bash
 # general
@@ -36,7 +36,7 @@ The [`run.py`](https://github.com/jeff1evesque/ist-664/blob/master/run.py) is an
 
 ## Motivation
 
-The objective of this project was to perform classification analysis. Therefore, the corresponding jupyter notebooks can be reviewed:
+The objective of this project was to perform classification analysis:
 
 - [`StackOverflow_Classification.ipynb`](https://github.com/jeff1evesque/ist-664/blob/master/StackOverflow/StackOverflow_Classification.ipynb)
 - [`StackOverflow_SKLearn.ipynb`](https://github.com/jeff1evesque/ist-664/blob/master/StackOverflow/StackOverflow_SKLearn.ipynb)
