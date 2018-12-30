@@ -11,14 +11,20 @@ from os import listdir
 from os.path import isfile, join
 
 
-def insert_dataset(client, database, collection, data_directory='data'):
+def insert_dataset(client, database, collection, data_directory='data', files=None):
     # database + collection
     db = client[database]
     col = db[collection]
 
+    # define iterable
+    if files:
+        iterable = files
+    else:
+        iterable = listdir(data_directory)
+
     # insert data
     data = []
-    for f in listdir(data_directory):
+    for f in iterable:
         file = join(data_directory, f)
         if isfile(file):
             with open(file) as fp:
