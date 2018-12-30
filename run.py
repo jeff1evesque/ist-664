@@ -20,6 +20,7 @@ from Reddit.app.train import train
 from Reddit.app.insert import insert_dataset
 from Reddit.app.select import select
 from Reddit.app.predict import predict
+from Reddit.app.drop import drop_collection
 from config import (
     mongos_endpoint,
     database,
@@ -101,6 +102,10 @@ def main(op='generic'):
             # predicted sentence
             print(predict(sentence, cwd=cwd, post_maxlen=post_maxlen))
 
+    elif op == 'drop':
+        client = MongoClient(mongos_endpoint)
+        drop_collection(client, database, collection)
+
     elif op == 'generic':
         # interative session
         print('\n\nStarting interactive mode (first response will take a while):')
@@ -147,6 +152,9 @@ if __name__ == '__main__':
 
     elif len(sys.argv) > 1 and sys.argv[1] == '--local':
         main(op='local')
+
+    elif len(sys.argv) > 1 and sys.argv[1] == '--drop':
+        main(op='drop')
 
     else:
         main(op='generic')
