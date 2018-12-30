@@ -1,6 +1,8 @@
 # IST-664
 
-This is final project for a short 10 week course in Natural Language Processing (NLP). In this project, two classifiers are ensembled with a [recurrent neural network](https://www.youtube.com/watch?v=6niqTuYFZLQ). Specifically, a [long short-term memory](https://en.wikipedia.org/wiki/Long_short-term_memory) (LSTM) generative learning agent was deployed, with two classifiers assisting as rules based components. The first attempted to predict whether a given sentence was a question. The second predicted what StackOverflow channel best represents a given sentence. Therefore, this ensembled application executes the LSTM agent when a given sentence is predicted as a question. If the agent is incapable of returning an adequate response, then the second classifier proposes a stackoverflow channel.
+This is final project for a short 10 week course in Natural Language Processing (NLP). In this project, two classifiers are ensembled with a [recurrent neural network](https://www.youtube.com/watch?v=6niqTuYFZLQ). Specifically, a [long short-term memory](https://en.wikipedia.org/wiki/Long_short-term_memory) (LSTM) generative learning agent was deployed, with two classifiers assisting as [rules-based](https://en.wikipedia.org/wiki/Rule-based_machine_learning) components.
+
+The first classifier attempts to predict whether a given sentence is a question. The second predicts what StackOverflow channel best represents a given sentence. Therefore, the ensembled application executes the LSTM agent when a given sentence is predicted as a question. If the agent is incapable of returning an adequate response, then the second classifier proposes a stackoverflow channel.
 
 ## Dependency
 
