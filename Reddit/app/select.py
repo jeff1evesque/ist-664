@@ -7,9 +7,26 @@ select.py, select specified data from mongodb endpoint
 '''
 
 
+from os import listdir
+from os.path import isfile, join
 from bson.code import Code
 
-def select(client, database, collection):
+def select_files(dir):
+    '''
+
+    list files in a given directory.
+
+    '''
+
+    return [f for f in listdir(dir) if isfile(join(dir, f))]
+
+def select_collection(client, database, collection):
+    '''
+
+    query all documents from selected collection.
+
+    '''
+
     # database + collection
     db = client[database]
     col = db[collection]

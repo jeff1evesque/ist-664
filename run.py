@@ -18,7 +18,7 @@ import joblib
 from Reddit.nmt_chatbot.inference import interactive
 from Reddit.app.train import train
 from Reddit.app.insert import insert_dataset
-from Reddit.app.select import select
+from Reddit.app.select import select_collection, select_files
 from Reddit.app.predict import predict
 from Reddit.app.drop import drop_collection
 from config import (
@@ -47,23 +47,25 @@ from QuestionAnswerCMU.utility import (
 )
 from StackOverflow.utility import tokenize, so_model
 
-def main(op='generic'):
+def main(op='generic', **kwargs):
     '''
     application entrypoint.
     '''
 
     if op == 'insert':
+        files = kwargs.get('files', None)
         client = MongoClient(mongos_endpoint)
         insert_dataset(
             client,
             database,
             collection,
-            '{base}/Reddit/{subdir}'.format(base=cwd, subdir=data_directory)
+            '{base}/Reddit/{subdir}'.format(base=cwd, subdir=data_directory),
+            files
         )
 
     elif op == 'train':
         client = MongoClient(mongos_endpoint)
-        results = select(client, database, collection)
+        results = select_collection(client, database, collection)
 
         # combine sequence pairs
         combined = {}
@@ -145,7 +147,30 @@ def main(op='generic'):
 
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == '--insert':
-        main(op='insert')
+        # local variables
+        fs = select_files('{base}/Reddit/data'.format(base=cwd))
+        selected = None
+        options = range(len(fs))
+
+        # prompt selection
+        while selected not in options:
+            print('\n\nSelect file(s) to ingest into database:\n')
+            print('[0]: use all files')
+            [ print('[{i}]: {f}'.format(i=ix+1, f=f)) for ix, f in enumerate(fs) ]
+
+            try:
+                selected = int(input('\n> '))
+            except ValueError:
+                print('Not a valid selection!')
+                continue
+            else:
+                break
+
+        # store selected data
+        if int(selected) > 0:
+            main(op='insert', files=[fs[selected-1]])
+        else:
+            main(op='insert')
 
     elif len(sys.argv) > 1 and sys.argv[1] == '--train':
         main(op='train')

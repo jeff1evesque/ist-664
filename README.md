@@ -32,7 +32,7 @@ The [`run.py`](https://github.com/jeff1evesque/ist-664/blob/master/run.py) is an
 
 - `--insert`: inserts relative `Reddit/data/` data into the specified mongodb endpoint
 - `--train`: trains an LSTM recurrent neural network for the "inserted" mongodb data
-- `--local`: implemented the local trained LSTM model
+- `--local`: implement the local trained LSTM model
 - `--drop`: drops all documents in the default mongodb collection used during `--insert`
 - `--generic`: implements a pretrained LSTM model based on 1M comment-reply pairs
 
