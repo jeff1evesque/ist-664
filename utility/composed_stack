@@ -1,5 +1,8 @@
 #!/bin/bash
 
+## local variables
+BASEDIR='/vagrant'
+
 ## install docker + docker-compose
 sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -12,14 +15,14 @@ sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-c
 sudo chmod +x /usr/local/bin/docker-compose
 
 ## build containers
-/usr/local/bin/docker-compose -f /vagrant/docker-compose.yml up -d
+/usr/local/bin/docker-compose -f "$BASEDIR"/docker-compose.yml up -d
 
 ## app packages
 sudo apt install -y python3-pip dos2unix
 sudo pip3 install pymongo MongoDBProxy
 
 ## ensure utility script executable
-dos2unix /vagrant/utility/*
+dos2unix "$BASEDIR"/utility/*
 
 ## config servers replica set
 docker exec -it mongocfg1 bash -c "echo 'rs.initiate({_id: \"mongors1conf\",configsvr: true, members: [{ _id : 0, host : \"mongocfg1\" },{ _id : 1, host : \"mongocfg2\" }, { _id : 2, host : \"mongocfg3\" }]})' | mongo"

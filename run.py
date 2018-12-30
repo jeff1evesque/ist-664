@@ -17,7 +17,7 @@ import sys
 import joblib
 from Reddit.nmt_chatbot.inference import interactive
 from Reddit.app.train import train
-from Reddit.app.insert import insert
+from Reddit.app.insert import insert_dataset
 from Reddit.app.select import select
 from Reddit.app.predict import predict
 from Reddit.config import (
@@ -25,7 +25,17 @@ from Reddit.config import (
     database,
     collection,
     data_directory,
-    username
+    username,
+    epochs,
+    batch_size,
+    split,
+    n_hidden,
+    post_maxlen,
+    comment_maxlen,
+    dropout,
+    recurrent_dropout,
+    checkpoint,
+    checkpoint_period
 )
 from QuestionAnswerCMU.utility import (
     tokenizer,
@@ -43,7 +53,7 @@ def main(op='generic'):
 
     if op == 'insert':
         client = MongoClient(mongos_endpoint)
-        insert(
+        insert_dataset(
             client,
             database,
             collection,
@@ -67,13 +77,29 @@ def main(op='generic'):
         posts = combined['posts']
         comments = combined['comments']
         scores = combined['scores']
-        model = train(posts, comments, cwd=cwd)
+        model = train(
+            posts,
+            comments,
+            epochs=epochs,
+            batch_size=batch_size,
+            split=split,
+            n_hidden=n_hidden,
+            post_maxlen=post_maxlen,
+            comment_maxlen=comment_maxlen,
+            dropout=dropout,
+            recurrent_dropout=recurrent_dropout,
+            checkpoint=checkpoint,
+            checkpoint_period=checkpoint_period,
+            cwd=cwd
+        )
 
     elif op == 'local':
         while True:
             # prompt input
             sentence = input('\n> ')
-            print(predict(sentence))
+
+            # predicted sentence
+            print(predict(sentence, cwd=cwd, post_maxlen=post_maxlen))
 
     elif op == 'generic':
         # interative session

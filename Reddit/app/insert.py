@@ -11,7 +11,7 @@ from os import listdir
 from os.path import isfile, join
 
 
-def insert(client, database, collection, data_directory='data'):
+def insert_dataset(client, database, collection, data_directory='data'):
     # database + collection
     db = client[database]
     col = db[collection]
