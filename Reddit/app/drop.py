@@ -2,13 +2,10 @@
 
 '''
 
-upload.py, upload specified data to mongodb endpoint.
+drop.py, drop specified object from database.
 
 '''
 
-import json
-from os import listdir
-from os.path import isfile, join
 
 
 def drop_collection(client, database, collection):
