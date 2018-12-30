@@ -1,0 +1,42 @@
+#!/bin/bash
+
+## local variables
+BASEDIR="$1"
+DROPBOX_PROJECT="$2"
+
+## install mongodb
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+sudo apt-get update -y
+sudo apt-get install -y mongodb-org python3-pip dos2unix unzip wget
+sudo pip3 install pymongo
+
+## start mongodb
+sudo service mongod start
+sudo systemctl enable mongod.service
+
+## chatbot dependencies
+sudo pip3 install nltk numpy regex python-Levenshtein colorama scikit-learn pandas joblib h5py matplotlib
+python3 -m nltk.downloader punkt averaged_perceptron_tagger
+
+##
+## tensorflow: install tensorflow-cpu, if no base directory provided, otherwise
+##     install tensorflow-gpu.
+##
+## Note: cuda + tensorflow + keras need compatibility versions.
+##
+if [ "${BASEDIR}x" = 'x' ];
+then
+  ./install_cuda
+  ./install_tensorflow
+  sudo pip3 install Keras==2.2.0
+else
+  sudo pip3 install tensorflow==1.4.1
+  sudo pip3 install Keras==2.1.2
+fi
+
+## chatbot: download + unzip
+wget "https://www.dropbox.com/s/p1say7bqpn8gfmt/${DROPBOX_PROJECT}.zip" -O "${BASEDIR}/Reddit/${DROPBOX_PROJECT}.zip"
+unzip -n "${BASEDIR}/Reddit/${DROPBOX_PROJECT}.zip" -d "${BASEDIR}/Reddit"
+rm "${BASEDIR}/Reddit/${DROPBOX_PROJECT}.zip"
+cp -f "${BASEDIR}/Reddit/app/inference.py" "${BASEDIR}/Reddit/${DROPBOX_PROJECT}/inference.py"
