@@ -107,7 +107,7 @@ def train(
         optimizer='adam',
         metrics=['accuracy']
     )
-    print (model.summary())
+    print(model.summary())
 
     # directory dependency
     if not path.exists('{base}/Reddit/model'.format(base=cwd)):
@@ -141,6 +141,13 @@ def train(
         compress=True
     )
 
+    # word2idx: needed by separate prediction
+    dump(
+        word2idx,
+        '{base}/Reddit/model/word2idx.pkl'.format(base=cwd),
+        compress=True
+    )
+
     # save model
     save_model(
         model,
@@ -159,7 +166,9 @@ def encode(sentence, maxlen, vocab_size, word2idx):
     indices = np.zeros((maxlen, vocab_size))
     for i, w in enumerate(nltk.word_tokenize(sentence)):
         if i == maxlen: break
-        indices[i, word2idx[w]] = 1
+
+        if w in word2idx:
+            indices[i, word2idx[w]] = 1
     return indices
 
 def create_posts(posts, vocab_size, post_maxlen, word2idx):
