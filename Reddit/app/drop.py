@@ -7,7 +7,6 @@ drop.py, drop specified object from database.
 '''
 
 
-
 def drop_collection(client, database, collection):
     '''
 
